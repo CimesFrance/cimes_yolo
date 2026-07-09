@@ -1,0 +1,289 @@
+"""Paramètres de transmission et configuration du rapport PDF."""
+
+import tkinter as tk
+from tkinter import ttk, messagebox
+import json
+import os
+
+from src.ui.widgets.ui_utils import COLOR_CARD_BG, create_setting_header, add_tooltip
+
+
+def create_transmission_settings(view):
+    """Construit le frame 'Transmission' et le retourne."""
+    # pylint: disable=too-many-statements
+    frame = ttk.Frame(view.param_content_frame, style="Card.TFrame")
+    create_setting_header(frame, "Transmission programmée des résultats")
+    inner = tk.Frame(frame, bg=COLOR_CARD_BG, padx=40, pady=20)
+    inner.pack(fill="both", expand=True)
+    # Activation
+    ttk.Checkbutton(
+        inner,
+        text="Activer la transmission des résultats",
+        variable=view.app.transmission_enabled_var,
+        command=lambda: _toggle_transmission_settings(view),
+    ).pack(anchor="w", pady=(0, 20))
+    view.transmission_params_frame = tk.Frame(inner, bg=COLOR_CARD_BG)
+    view.transmission_params_frame.pack(fill="x", pady=(0, 10))
+    # Mode
+    mode_header = tk.Frame(view.transmission_params_frame, bg=COLOR_CARD_BG)
+    mode_header.pack(fill="x", pady=(0, 10))
+    tk.Label(
+        mode_header,
+        text="Mode de transmission",
+        bg=COLOR_CARD_BG,
+        fg="#111827",
+        anchor="w",
+        font=("Segoe UI", 10, "bold"),
+    ).pack(side="left")
+    add_tooltip(
+        mode_header,
+        "Définit quand les rapports sont envoyés automatiquement par email.\n\n"
+        "• 'À chaque capture' : un email est envoyé après chaque analyse.\n"
+        "• 'À la fin de journée' : toutes les captures du jour sont compressées\n"
+        "  en une archive ZIP et envoyées en un seul email à l'heure choisie.",
+    ).pack(side="left")
+    mode_frame = tk.Frame(view.transmission_params_frame, bg=COLOR_CARD_BG)
+    mode_frame.pack(fill="x", pady=(0, 15))
+    ttk.Radiobutton(
+        mode_frame,
+        text="À chaque capture",
+        value="capture",
+        variable=view.app.transmission_mode_var,
+    ).pack(anchor="w", pady=(0, 5))
+    ttk.Radiobutton(
+        mode_frame,
+        text="À la fin de journée",
+        value="daily",
+        variable=view.app.transmission_mode_var,
+    ).pack(anchor="w", pady=(0, 5))
+    # Heure d'envoi
+    view.time_transmission_frame = tk.Frame(
+        view.transmission_params_frame, bg=COLOR_CARD_BG
+    )
+    view.time_transmission_frame.pack(fill="x", pady=(0, 15))
+    time_label_row = tk.Frame(view.time_transmission_frame, bg=COLOR_CARD_BG)
+    time_label_row.pack(fill="x", pady=(0, 5))
+    tk.Label(
+        time_label_row,
+        text="Heure d'envoi:",
+        bg=COLOR_CARD_BG,
+        anchor="w",
+        font=("Segoe UI", 10, "bold"),
+    ).pack(side="left")
+    add_tooltip(
+        time_label_row,
+        "Heure à laquelle le rapport journalier est envoyé automatiquement.\n\n"
+        "Format : HH:MM en heure locale (ex: 18:00 pour 18h)\n\n",
+    ).pack(side="left")
+    time_frame = tk.Frame(view.time_transmission_frame, bg=COLOR_CARD_BG)
+    time_frame.pack(fill="x", pady=(0, 10))
+    ttk.Entry(
+        time_frame,
+        textvariable=view.app.transmission_time_var,
+        width=8,
+        font=("Segoe UI", 10),
+    ).pack(side="left")
+    tk.Label(
+        time_frame,
+        text="(format HH:MM, ex: 18:00)",
+        bg=COLOR_CARD_BG,
+        font=("Segoe UI", 9, "italic"),
+    ).pack(side="left", padx=(10, 0))
+    # Email
+    view.email_label = tk.Label(
+        view.transmission_params_frame,
+        text="Email du destinataire:",
+        bg=COLOR_CARD_BG,
+        fg="#111827",
+        anchor="w",
+        font=("Segoe UI", 10, "bold"),
+    )
+    view.email_label.pack(fill="x", pady=(10, 5))
+    ttk.Entry(
+        view.transmission_params_frame,
+        textvariable=view.app.transmission_email_var,
+        width=40,
+        font=("Segoe UI", 10),
+    ).pack(fill="x", pady=(0, 20))
+    # Courbe corrigée DNA
+    dna_row = tk.Frame(view.transmission_params_frame, bg=COLOR_CARD_BG)
+    dna_row.pack(fill="x", pady=(0, 10))
+    ttk.Checkbutton(
+        dna_row,
+        text="Inclure la courbe corrigée DNA dans les rapports",
+        variable=view.app.show_corrected_curve_var,
+    ).pack(side="left")
+    add_tooltip(
+        dna_row,
+        "Si coché, les rapports PDF incluront deux courbes granulométriques :\n"
+        "  • La courbe brute (mesures directes de la caméra)\n"
+        "  • La courbe corrigée (après application de la correction DNA)\n\n",
+    ).pack(side="left")
+    ttk.Separator(view.transmission_params_frame, orient="horizontal").pack(
+        fill="x", pady=(10, 20)
+    )
+    # Configuration du rapport PDF
+    tk.Label(
+        view.transmission_params_frame,
+        text="Configuration du rapport PDF",
+        bg=COLOR_CARD_BG,
+        fg="#111827",
+        anchor="w",
+        font=("Segoe UI", 11, "bold"),
+    ).pack(fill="x", pady=(0, 10))
+    report_options_frame = tk.Frame(view.transmission_params_frame, bg=COLOR_CARD_BG)
+    report_options_frame.pack(fill="x", pady=(0, 15))
+    options_grid = tk.Frame(report_options_frame, bg=COLOR_CARD_BG)
+    options_grid.pack(fill="x")
+    col1 = tk.Frame(options_grid, bg=COLOR_CARD_BG)
+    col1.pack(side="left", fill="both", expand=True)
+    ttk.Checkbutton(
+        col1,
+        text="Image capturée",
+        variable=view.app.report_options["include_captured_image"],
+    ).pack(anchor="w", pady=2)
+    ttk.Checkbutton(
+        col1,
+        text="Image segmentée",
+        variable=view.app.report_options["include_segmented_image"],
+    ).pack(anchor="w", pady=2)
+    ttk.Checkbutton(
+        col1,
+        text="Courbe granulométrique",
+        variable=view.app.report_options["include_granulometric_curve"],
+    ).pack(anchor="w", pady=2)
+    col2 = tk.Frame(options_grid, bg=COLOR_CARD_BG)
+    col2.pack(side="left", fill="both", expand=True, padx=(20, 0))
+    ttk.Checkbutton(
+        col2,
+        text="Courbe de distribution",
+        variable=view.app.report_options["include_distribution_curve"],
+    ).pack(anchor="w", pady=2)
+    ttk.Checkbutton(
+        col2,
+        text="Tableau statistique",
+        variable=view.app.report_options["include_statistics"],
+    ).pack(anchor="w", pady=2)
+    # Zone commentaire
+    comment_frame = tk.Frame(view.transmission_params_frame, bg=COLOR_CARD_BG)
+    comment_frame.pack(fill="x", pady=(15, 10))
+    tk.Label(
+        comment_frame,
+        text="Commentaire (optionnel)",
+        bg=COLOR_CARD_BG,
+        fg="#4b5563",
+        font=("Segoe UI", 10, "bold"),
+    ).pack(anchor="w")
+    view.comment_text = tk.Text(comment_frame, height=4, font=("Segoe UI", 10))
+    view.comment_text.pack(fill="x", pady=(5, 0))
+    if view.app.report_options["custom_comment"].get():
+        view.comment_text.insert("1.0", view.app.report_options["custom_comment"].get())
+    # Note informative
+    note_frame = tk.Frame(view.transmission_params_frame, bg=COLOR_CARD_BG)
+    note_frame.pack(fill="x", pady=(10, 0))
+    tk.Label(
+        note_frame,
+        text="⚠️ Les options d'inclusion sont configurées dans Paramètres → Transmission",
+        bg=COLOR_CARD_BG,
+        fg="#dc2626",
+        font=("Segoe UI", 9, "italic"),
+        wraplength=500,
+    ).pack(anchor="w")
+    ttk.Separator(view.transmission_params_frame, orient="horizontal").pack(
+        fill="x", pady=(15, 20)
+    )
+    # Bouton de sauvegarde
+    ttk.Button(
+        view.transmission_params_frame,
+        text="Sauvegarder",
+        style="ParamSave.TButton",
+        command=lambda: _save_report_configuration(view),
+    ).pack(pady=(0, 10))
+    view.app.transmission_enabled_var.trace_add(
+        "write", lambda *a: _toggle_transmission_settings(view)
+    )
+    view.app.transmission_mode_var.trace_add(
+        "write", lambda *a: _update_transmission_mode_display(view)
+    )
+    _toggle_transmission_settings(view)
+    _update_transmission_mode_display(view)
+    return frame
+
+
+def _toggle_transmission_settings(view):
+    """Active/désactive les paramètres de transmission."""
+    state = "normal" if view.app.transmission_enabled_var.get() else "disabled"
+    
+    def set_state(widget):
+        if isinstance(
+            widget,
+            (
+                tk.Label,
+                ttk.Entry,
+                ttk.Combobox,
+                ttk.Spinbox,
+                ttk.Radiobutton,
+                ttk.Checkbutton,
+                tk.Text,
+                ttk.Button,
+            ),
+        ):
+            widget.configure(state=state)
+        for child in widget.winfo_children():
+            set_state(child)
+
+    for widget in view.transmission_params_frame.winfo_children():
+        set_state(widget)
+
+
+def _update_transmission_mode_display(view):
+    """Met à jour l'affichage du mode de transmission."""
+    mode = view.app.transmission_mode_var.get()
+    if mode == "daily":
+        view.time_transmission_frame.pack(before=view.email_label, fill="x", pady=(0, 15))
+    else:
+        view.time_transmission_frame.pack_forget()
+
+
+def _save_report_configuration(view):
+    """Sauvegarde la configuration du rapport."""
+    # Validation de l'email
+    if view.app.transmission_enabled_var.get() and not view.app.transmission_email_var.get().strip():
+        messagebox.showerror("Erreur", "Veuillez renseigner une adresse e-mail de destination pour la transmission.")
+        return
+        
+    comment = view.comment_text.get("1.0", tk.END).strip()
+    view.app.report_options["custom_comment"].set(comment)
+    report_config = {
+        "transmission_enabled": view.app.transmission_enabled_var.get(),
+        "transmission_mode": view.app.transmission_mode_var.get(),
+        "transmission_time": view.app.transmission_time_var.get(),
+        "transmission_email": view.app.transmission_email_var.get(),
+        "include_captured_image": view.app.report_options[
+            "include_captured_image"
+        ].get(),
+        "include_segmented_image": view.app.report_options[
+            "include_segmented_image"
+        ].get(),
+        "include_granulometric_curve": view.app.report_options[
+            "include_granulometric_curve"
+        ].get(),
+        "include_distribution_curve": view.app.report_options[
+            "include_distribution_curve"
+        ].get(),
+        "include_statistics": view.app.report_options["include_statistics"].get(),
+        "custom_comment": comment,
+        "dna_correction_enabled": view.app.show_corrected_curve_var.get(),
+    }
+    try:
+        save_dir = os.path.join(os.path.expanduser("~"), "CIMES_Settings")
+        os.makedirs(save_dir, exist_ok=True)
+        with open(
+            os.path.join(save_dir, "report_configuration.json"), "w", encoding="utf-8"
+        ) as f:
+            json.dump(report_config, f, indent=4, ensure_ascii=False)
+        messagebox.showinfo(
+            "Succès", "Configuration du rapport sauvegardée avec succès !"
+        )
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        messagebox.showerror("Erreur", f"Erreur lors de la sauvegarde : {str(e)}")

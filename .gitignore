@@ -1,0 +1,15 @@
+.venv/
+*.egg-info/
+dist/
+build/
+.vscode/
+.idea/
+**/__pycache__/
+.env
+server/.env
+*.pyc
+App_env/
+.license_cache
+.license_attempts
+*.pt
+secrets.json
