@@ -58,12 +58,12 @@ Cimes/
 
 ### Prérequis
 
-- **[uv](https://docs.astral.sh/uv/)** — gestionnaire de projet Python (remplace pip + venv)
-- Python **3.13** (installé automatiquement par uv si absent)
-- Une carte graphique NVIDIA (recommandé pour la segmentation par GPU)
-- Pilotes CUDA installés (si utilisation GPU)
+- **[uv](https://docs.astral.sh/uv/)** — gestionnaire de projet Python
+- Python **3.13**
+- Une carte graphique NVIDIA
+- Pilotes CUDA installés
 
-#### Installer uv (si absent)
+#### Installer uv
 
 ```powershell
 # Windows (PowerShell)
@@ -85,7 +85,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
    cd Cimes_app
    ```
 
-2. **Synchroniser l'environnement (Python + dépendances) :**
+2. **Synchroniser l'environnement:**
    ```bash
    uv sync
    ```
