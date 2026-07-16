@@ -19,7 +19,7 @@ def create_analysis_settings(view):
     dna_header.pack(fill="x", pady=(0, 10))
     tk.Label(
         dna_header,
-        text="Correction DNA de la courbe granulométrique",
+        text="Correction de la courbe granulométrique",
         bg=COLOR_CARD_BG,
         fg="#111827",
         anchor="w",
@@ -27,7 +27,7 @@ def create_analysis_settings(view):
     ).pack(side="left")
     add_tooltip(
         dna_header,
-        "La correction DNA (Distrib. Normalisée Ajustée) compense les biais systématiques\n"
+        "La correction compense les biais systématiques\n"
         "introduits par le système optique lors de la mesure des grains.\n\n"
         "Ces paramètres sont calculés automatiquement par le module\n"
         "'Modifier correction'.",
@@ -36,7 +36,7 @@ def create_analysis_settings(view):
     corr_frame.pack(fill="x", pady=(5, 20))
     ttk.Checkbutton(
         corr_frame,
-        text="Afficher la courbe corrigée (DNA)",
+        text="Afficher la courbe corrigée",
         variable=view.app.show_corrected_curve_var,
         command=lambda: _update_curve_display(view),
     ).pack(anchor="w", pady=(0, 10))
@@ -44,7 +44,7 @@ def create_analysis_settings(view):
     param_frame.pack(fill="x", pady=(5, 0))
     tk.Label(
         param_frame,
-        text="Paramètres de correction DNA :",
+        text="Paramètres de correction:",
         bg=COLOR_CARD_BG,
         font=("Segoe UI", 10, "bold"),
     ).pack(anchor="w", pady=(0, 5))
@@ -76,7 +76,7 @@ def create_analysis_settings(view):
     ).pack(side="left", padx=(5, 0))
     tk.Label(
         corr_frame,
-        text="La correction DNA applique une transformation linéaire\n"
+        text="La correction applique une transformation linéaire\n"
         "aux tailles de tamis pour améliorer la précision des mesures.",
         bg=COLOR_CARD_BG,
         fg="#6b7280",
@@ -87,7 +87,7 @@ def create_analysis_settings(view):
     # Segmentation YOLO-OBB
     tk.Label(
         inner,
-        text="Segmentation YOLO-OBB",
+        text="Outil d'analyse des images",
         bg=COLOR_CARD_BG,
         fg="#111827",
         anchor="w",
@@ -131,36 +131,7 @@ def create_analysis_settings(view):
             wraplength=400,
             justify="left",
         ).pack(anchor="w", pady=(5, 10))
-    # Paramètres de segmentation
-    tk.Label(
-        inner,
-        text="Paramètres de segmentation :",
-        bg=COLOR_CARD_BG,
-        anchor="w",
-        font=("Segoe UI", 10, "bold"),
-    ).pack(fill="x", pady=(15, 0))
-    seg_param_frame = tk.Frame(inner, bg=COLOR_CARD_BG)
-    seg_param_frame.pack(fill="x", pady=(5, 10))
-    conf_label_row = tk.Frame(seg_param_frame, bg=COLOR_CARD_BG)
-    conf_label_row.pack(side="left")
-    tk.Label(
-        conf_label_row,
-        text="Seuil de confiance YOLO (0.0–1.0) :",
-        bg=COLOR_CARD_BG,
-        font=("Segoe UI", 10),
-        anchor="w",
-    ).pack(side="left")
-    add_tooltip(
-        conf_label_row,
-        "Seuil de confiance pour la détection YOLO-OBB.\n\n"
-        "Valeur recommandée : 0.25 (défaut).\n"
-        "Augmentez pour réduire les faux positifs.\n"
-        "Diminuez pour détecter plus de petits cailloux.",
-    ).pack(side="left")
-    view.conf_threshold_var = tk.StringVar(value="0.25")
-    ttk.Entry(
-        seg_param_frame, textvariable=view.conf_threshold_var, width=10, font=("Segoe UI", 10)
-    ).pack(side="left")
+
     button_frame = tk.Frame(inner, bg=COLOR_CARD_BG)
     button_frame.pack(fill="x", pady=(10, 0))
     ttk.Separator(inner, orient="horizontal").pack(fill="x", pady=(10, 20))
@@ -206,16 +177,9 @@ def _apply_analysis_settings(view):
     Args:
         view: Vue principale de l'application.
     """
-    try:
-        conf = float(view.conf_threshold_var.get())
-        if not (0.0 <= conf <= 1.0):
-            raise ValueError("Le seuil de confiance doit être entre 0.0 et 1.0")
-        messagebox.showinfo(
-            "Succès",
-            f"Paramètres d'analyse appliqués :\n"
-            f"- Seuil confiance YOLO : {conf}\n"
-            f"- Correction DNA : "
-            f"{'Activée' if view.app.show_corrected_curve_var.get() else 'Désactivée'}",
-        )
-    except ValueError as e:
-        messagebox.showerror("Erreur", f"Paramètre invalide: {str(e)}")
+    messagebox.showinfo(
+        "Succès",
+        f"Paramètres d'analyse appliqués :\n"
+        f"- Correction DNA : "
+        f"{'Activée' if view.app.show_corrected_curve_var.get() else 'Désactivée'}",
+    )

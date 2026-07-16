@@ -1,5 +1,7 @@
 import os
 import json
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
@@ -128,9 +130,20 @@ def generate_pdf_report(capture_dir, app):
         ]))
         Story.append(t)
         
-    doc.build(Story)
-    
-    # Nettoyer l'image temporaire
+    try:
+        doc.build(Story)
+    except Exception as e:
+        print(f"[REPORT] Échec de la génération du document PDF : {e}")
+        # Nettoyer l'image temporaire en cas d'échec
+        temp_curve = os.path.join(capture_dir, "temp_granulo.png")
+        if os.path.exists(temp_curve):
+            try:
+                os.remove(temp_curve)
+            except Exception:
+                pass
+        raise RuntimeError(f"Erreur d'écriture du fichier PDF (vérifiez qu'il n'est pas déjà ouvert) : {e}") from e
+        
+    # Nettoyer l'image temporaire après succès
     temp_curve = os.path.join(capture_dir, "temp_granulo.png")
     if os.path.exists(temp_curve):
         try:

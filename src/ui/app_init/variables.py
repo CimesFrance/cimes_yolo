@@ -46,11 +46,21 @@ def initialize_variables(app):
     }
     # Mode de capture
     app.capture_mode_var = tk.StringVar(value="automatique")
-    # Transmission
+    # Transmission — configuration SMTP complète
     app.transmission_enabled_var = tk.BooleanVar(value=False)
     app.transmission_mode_var = tk.StringVar(value="capture")
     app.transmission_time_var = tk.StringVar(value="17:00")
-    app.transmission_email_var = tk.StringVar(value="")
+    # Nouveau formulaire SMTP
+    app.mail_poste_var = tk.StringVar(value="")
+    app.mail_mode_var = tk.StringVar(value="none")          # none | error | error_result
+    app.mail_recipients_var = tk.StringVar(value="")
+    app.mail_server_var = tk.StringVar(value="")
+    app.mail_port_var = tk.StringVar(value="587")
+    app.mail_sender_var = tk.StringVar(value="")
+    app.mail_password_var = tk.StringVar(value="")
+    app.mail_security_var = tk.StringVar(value="none")      # ssl | tls | none
+    # Rétrocompatibilité
+    app.transmission_email_var = app.mail_recipients_var
     # Chemins
     app.results_path_var = tk.StringVar(
         value=os.path.join(os.path.expanduser("~"), "CIMES_Results")

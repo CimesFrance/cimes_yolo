@@ -165,17 +165,31 @@ class ParamView:
                 widget.configure(state="disabled")
 
     def _download_guide(self):
-        """Permet de télécharger (sauvegarder) le guide d'utilisation PDF."""
+        """Permet de télécharger (sauvegarder) le guide d'utilisation PDF avec fallbacks de chemins."""
+        import sys
+        # 1. Recherche principale (dossier projet ou _MEIPASS)
         guide_path = os.path.join(get_project_root(), "assets", "Guide_Utilisation.pdf")
         
+        # Fallback 1 : Si exécutable PyInstaller et assets à côté du .exe
+        if not os.path.exists(guide_path) and getattr(sys, 'frozen', False):
+            exe_dir = os.path.dirname(sys.executable)
+            guide_path = os.path.join(exe_dir, "assets", "Guide_Utilisation.pdf")
+            
+        # Fallback 2 : Recherche dans le dossier de travail courant
+        if not os.path.exists(guide_path):
+            guide_path = os.path.join(os.getcwd(), "assets", "Guide_Utilisation.pdf")
+            
         if not os.path.exists(guide_path):
             messagebox.showwarning(
-                "Fichier introuvable", 
-                "Le guide d'utilisation (Guide_Utilisation.pdf) est introuvable dans le dossier assets."
+                "Fichier introuvable",
+                "Le guide d'utilisation (Guide_Utilisation.pdf) est introuvable.\n"
+                "Vérifiez que le dossier 'assets' contenant le PDF existe à côté de l'application.",
+                parent=self.frame
             )
             return
             
         save_path = filedialog.asksaveasfilename(
+            parent=self.frame,
             defaultextension=".pdf",
             initialfile="Guide_Utilisation.pdf",
             title="Enregistrer le guide d'utilisation",
@@ -185,6 +199,6 @@ class ParamView:
         if save_path:
             try:
                 shutil.copy2(guide_path, save_path)
-                messagebox.showinfo("Succès", "Le guide a été téléchargé avec succès.")
+                messagebox.showinfo("Succès", "Le guide a été téléchargé avec succès.", parent=self.frame)
             except Exception as e:
-                messagebox.showerror("Erreur", f"Erreur lors du téléchargement :\n{str(e)}")
+                messagebox.showerror("Erreur", f"Erreur lors du téléchargement :\n{str(e)}", parent=self.frame)

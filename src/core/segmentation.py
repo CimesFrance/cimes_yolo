@@ -36,6 +36,9 @@ YOLO_MODEL_PATH = os.path.join(_get_base_dir(), "best.pt")
 # Seuil de confiance par défaut
 YOLO_CONF_DEFAULT = 0.25
 
+# Cache global pour éviter de recharger le modèle à chaque capture
+_yolo_model = None
+
 
 def mask_overlay(img, masks):
     """Overlay masks on image (set image to grayscale).
@@ -137,13 +140,18 @@ def segment_and_analyze(
         processed_image = homo_and_pixel_conversion(processed_image, homo_matrix)
 
     # YOLO attend une image BGR ou RGB
-    print(f"Chargement modèle YOLO-OBB : {YOLO_MODEL_PATH}")
-    try:
-        model = YOLO(YOLO_MODEL_PATH)
-        print("[OK] Modèle YOLO-OBB chargé")
-    except Exception as e:
-        print(f"[ERREUR] Échec du chargement du modèle YOLO : {e}")
-        raise
+    global _yolo_model
+    if _yolo_model is None:
+        print(f"Chargement initial du modèle YOLO-OBB : {YOLO_MODEL_PATH}")
+        try:
+            _yolo_model = YOLO(YOLO_MODEL_PATH)
+            print("[OK] Modèle YOLO-OBB chargé en mémoire")
+        except Exception as e:
+            print(f"[ERREUR] Échec du chargement du modèle YOLO : {e}")
+            raise
+    else:
+        print("[OK] Utilisation du modèle YOLO-OBB pré-chargé")
+    model = _yolo_model
 
     print(f"[DEBUG] Inférence YOLO sur image de taille {processed_image.shape}, conf={conf_threshold}")
     try:

@@ -23,7 +23,6 @@ from getmac import get_mac_address as gma
 from supabase import create_client, Client
 
 from .config import (
-    API_SECRET_KEY,
     LICENSE_CACHE_PATH,
     SUPABASE_URL,
     SUPABASE_KEY,

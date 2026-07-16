@@ -19,21 +19,43 @@ class VideoStream:
         self.last_error = None
 
     def start(self):
-        """Démarre le flux vidéo."""
+        """Démarre le flux vidéo de manière robuste avec un timeout de connexion de 3 secondes."""
         if self.running:
             return True
         self.last_error = None
-        try:
-            self.cap = cv2.VideoCapture(self.rtsp_url, cv2.CAP_FFMPEG)
-            self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-            if not self.cap.isOpened():
-                self.last_error = f"Impossible d'ouvrir le flux RTSP : {self.rtsp_url}"
-                print(f"[ERREUR] {self.last_error}")
-                return False
-        except Exception as e:  # pylint: disable=broad-exception-caught
-            self.last_error = f"Erreur lors de la connexion au flux : {e}"
+        
+        connection_result = {"cap": None, "error": None}
+        
+        def attempt_connection():
+            try:
+                cap = cv2.VideoCapture(self.rtsp_url, cv2.CAP_FFMPEG)
+                cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+                if not cap.isOpened():
+                    connection_result["error"] = f"Impossible d'ouvrir le flux RTSP : {self.rtsp_url}"
+                else:
+                    connection_result["cap"] = cap
+            except Exception as e:
+                connection_result["error"] = f"Erreur lors de la connexion au flux : {e}"
+        
+        # Lancement de la tentative dans un thread temporaire
+        conn_thread = threading.Thread(target=attempt_connection)
+        conn_thread.daemon = True
+        conn_thread.start()
+        
+        # Attente maximale de 3 secondes
+        conn_thread.join(timeout=3.0)
+        
+        if conn_thread.is_alive():
+            self.last_error = f"Délai d'attente dépassé (timeout 3s) lors de la connexion à : {self.rtsp_url}"
             print(f"[ERREUR] {self.last_error}")
             return False
+            
+        if connection_result["error"]:
+            self.last_error = connection_result["error"]
+            print(f"[ERREUR] {self.last_error}")
+            return False
+            
+        self.cap = connection_result["cap"]
         self.running = True
         self.thread = threading.Thread(target=self._update, args=())
         self.thread.daemon = True
