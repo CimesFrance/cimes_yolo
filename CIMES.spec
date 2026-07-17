@@ -3,7 +3,7 @@ from PyInstaller.utils.hooks import collect_all
 
 datas = [('assets', 'assets'), ('best.pt', '.'), ('mesure_config.json', '.'), ('modules', 'modules')]
 binaries = []
-hiddenimports = ['sklearn.utils._cython_blas', 'sklearn.neighbors._typedefs', 'sklearn.utils._heap', 'sklearn.utils._sorting', 'sklearn.utils._vector_sentinel', 'supabase', 'gotrue', 'postgrest', 'realtime', 'storage3', 'getmac', 'cv2']
+hiddenimports = ['sklearn.utils._cython_blas', 'sklearn.neighbors._typedefs', 'sklearn.utils._heap', 'sklearn.utils._sorting', 'sklearn.utils._vector_sentinel', 'cryptography', 'cv2']
 tmp_ret = collect_all('ultralytics')
 datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
 tmp_ret = collect_all('timm')
