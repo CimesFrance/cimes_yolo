@@ -8,7 +8,7 @@
 
 ## Présentation
 
-**CIMES** (Captation et Imagerie pour la Mesure et l'Évaluation des Solides) est une application professionnelle de **granulométrie par vision artificielle**. Elle permet d'analyser en temps réel ou de manière différée la distribution de taille des solides (comme le ballast) à partir d'un flux vidéo (caméra IP/RTSP) ou d'images enregistrées.
+**CIMES** est une application professionnelle de **granulométrie par vision artificielle**. Elle permet d'analyser en temps réel ou de manière différée la distribution de taille des solides (comme le ballast) à partir d'un flux vidéo (caméra IP/RTSP) ou d'images enregistrées.
 
 Le logiciel utilise des algorithmes de Deep Learning via **YOLO-OBB** pour segmenter les particules avec précision, même dans des conditions de superposition ou de textures complexes.
 
