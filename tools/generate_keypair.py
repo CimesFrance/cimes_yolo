@@ -2,7 +2,7 @@
 Script de génération d'une paire de clés RSA (2048 bits) pour le système de licence CIMES.
 
 Génère deux fichiers :
-  - private_key.pem : Clé privée à conserver précieusement et secrètement (non committée).
+  - private_key.pem : Clé privée à conserver précieusement et secrètement.
   - public_key.pem  : Clé publique à distribuer dans le code du logiciel.
 """
 
@@ -66,7 +66,7 @@ def generate_keys():
     print(f"  Clé privée (CONFIDENTIELLE) : {private_key_path}")
     print(f"  Clé publique (À EMBARQUER)  : {public_key_path}")
     print()
-    print("⚠️  ATTENTION : Ne committez JAMAIS la clé privée sur Git !")
+    print(" ATTENTION : Ne committez JAMAIS la clé privée sur Git !")
     print("=" * 60)
 
 

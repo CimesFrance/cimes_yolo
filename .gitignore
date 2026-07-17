@@ -13,3 +13,5 @@ App_env/
 .license_attempts
 *.pt
 secrets.json
+private_key.pem
+*.lic

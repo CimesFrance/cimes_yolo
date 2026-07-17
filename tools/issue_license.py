@@ -1,5 +1,5 @@
 """
-Script de génération de licence CIMES (issue_license.py).
+Script de génération de licence CIMES.
 
 Génère un fichier de licence '.lic' chiffré/signé cryptographiquement en RSA.
 Ce fichier contient la liste des empreintes machine autorisées pour le multi-poste.
@@ -25,7 +25,7 @@ except ImportError:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Générateur de licences CIMES (usage interne)")
+    parser = argparse.ArgumentParser(description="Générateur de licences CIMES")
     parser.add_argument("--client", required=True, help="Nom de l'entreprise cliente")
     parser.add_argument("--fingerprints", required=True, help="Liste d'empreintes machine séparées par des virgules")
     parser.add_argument("--max-postes", type=int, default=1, help="Nombre maximal de postes autorisés")
@@ -46,7 +46,7 @@ def main():
         expires_date = datetime.strptime(args.expires, "%Y-%m-%d")
         expires_str = expires_date.strftime("%Y-%m-%d")
     except ValueError:
-        print("[ERREUR] La date d'expiration doit être au format YYYY-MM-DD (ex: 2027-07-16).")
+        print("[ERREUR] La date d'expiration doit être au format YYYY-MM-DD.")
         sys.exit(1)
 
     # 3. Préparer les empreintes (suppression des espaces et conversion en majuscules)
@@ -99,7 +99,7 @@ def main():
     try:
         with open(args.output, "w", encoding="utf-8") as lic_file:
             json.dump(license_data, lic_file, indent=4, ensure_ascii=False)
-        print(f"✅ Licence générée avec succès dans : {args.output}")
+        print(f"Licence générée avec succès dans : {args.output}")
         print(f"   Entreprise  : {args.client}")
         print(f"   Postes Max  : {args.max_postes} (Enregistrés: {len(fps)})")
         print(f"   Expiration  : {expires_str}")

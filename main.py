@@ -46,7 +46,7 @@ if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
         print(f"Erreur lors du pré-chargement de torch: {e}")
 
 from src.ui.main_app import CimesApp
-from src.license import check_license, register_license, LicenseStatus, get_mac_address
+from src.license import check_license, register_license, LicenseStatus
 
 
 warnings.filterwarnings("ignore")
@@ -87,8 +87,7 @@ if __name__ == "__main__":
             reg_status = register_license(key)
             return reg_status.valid, reg_status.message
 
-        mac_addr = get_mac_address()
-        dialog = LicenseActivationDialog(mac_address=mac_addr, on_activate_callback=handle_activation)
+        dialog = LicenseActivationDialog(on_activate_callback=handle_activation)
         dialog.mainloop()
         
         if dialog.result:
