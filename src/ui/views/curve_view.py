@@ -22,7 +22,8 @@ from src.ui.views.curve_subviews.comparison_dialog import ComparisonDialog
 
 
 class CurveView(StatsPanel, HistoryPanel, ChartPanel, ComparisonDialog):
-    """ Classe principale de la vue Courbe """
+    """Classe principale de la vue Courbe"""
+
     # pylint: disable=too-many-instance-attributes,too-few-public-methods
 
     def __init__(self, parent, app):

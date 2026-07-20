@@ -11,6 +11,7 @@ class ChartPanel:
     """
     Mixin pour CurveView — gère les deux onglets de graphiques.
     """
+
     # pylint: disable=no-member,attribute-defined-outside-init,too-few-public-methods
 
     def _update_curve_view(self):
@@ -189,7 +190,9 @@ class ChartPanel:
                 ]
 
                 hist, _ = np.histogram(minor_axes_mm, bins=bins)
-                colors = plt.cm.viridis(np.linspace(0, 1, len(hist)))  # pylint: disable=no-member
+                colors = plt.cm.viridis(
+                    np.linspace(0, 1, len(hist))
+                )  # pylint: disable=no-member
                 bars = self.hist_ax.bar(
                     range(len(hist)), hist, color=colors, edgecolor="black", alpha=0.8
                 )

@@ -11,6 +11,7 @@ class HistoryPanel:
     """
     Mixin pour CurveView — gère l'historique et le tableau des particules.
     """
+
     # pylint: disable=no-member,attribute-defined-outside-init,too-few-public-methods
 
     def _create_particles_table(self, parent):

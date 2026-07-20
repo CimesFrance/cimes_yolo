@@ -13,6 +13,7 @@ matplotlib.use("Agg")
 # pylint: disable=wrong-import-position
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
+
 # pylint: enable=wrong-import-position
 
 
@@ -20,6 +21,7 @@ class ChartRenderer:
     """
     Mixin pour MeasureView — rendu des courbes et images dans les labels.
     """
+
     # pylint: disable=no-member,attribute-defined-outside-init,too-few-public-methods
     def _update_display_label(self, label, frame, attribute_name):
         """Affiche un frame numpy dans un label tkinter en conservant les proportions."""

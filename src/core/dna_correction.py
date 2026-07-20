@@ -1,10 +1,12 @@
-""" 
+"""
 Ce fichier contient les fonctions de correction DNA
 """
+
 import numpy as np
 
+
 def dna_correct(cumul_actuel, tamis_exp, scale=0.823, offset=8.5):
-    """ 
+    """
     Correction DNA de la courbe granulométrique avec transformation linéaire.
     """
     # pylint: disable=too-many-locals, too-many-branches
@@ -19,12 +21,12 @@ def dna_correct(cumul_actuel, tamis_exp, scale=0.823, offset=8.5):
         a_list = []
         b_list = []
         # Calculer les coefficients a et b pour chaque segment
-        for i in range(tamis_exp.shape[0]-1):
-            denominator = tamis_temp[i+1] - tamis_temp[i]
+        for i in range(tamis_exp.shape[0] - 1):
+            denominator = tamis_temp[i + 1] - tamis_temp[i]
             if denominator == 0:
                 a = 0
             else:
-                a = (cumulative_classes[i+1] - cumulative_classes[i]) / denominator
+                a = (cumulative_classes[i + 1] - cumulative_classes[i]) / denominator
             b = cumulative_classes[i] - a * tamis_temp[i]
             a_list.append(a)
             b_list.append(b)
@@ -35,9 +37,9 @@ def dna_correct(cumul_actuel, tamis_exp, scale=0.823, offset=8.5):
                 j = 1
                 while elt_exp > tamis_temp[j]:
                     j += 1
-                cumulative_corrige.append(a_list[j-1] * elt_exp + b_list[j-1])
+                cumulative_corrige.append(a_list[j - 1] * elt_exp + b_list[j - 1])
             else:
-                if elt_exp > tamis_temp[tamis_temp.shape[0]-1]:
+                if elt_exp > tamis_temp[tamis_temp.shape[0] - 1]:
                     cumulative_corrige.append(a_list[-1] * elt_exp + b_list[-1])
                 elif elt_exp < tamis_temp[0]:
                     cumulative_corrige.append(a_list[0] * elt_exp + b_list[0])
@@ -51,4 +53,6 @@ def dna_correct(cumul_actuel, tamis_exp, scale=0.823, offset=8.5):
                 cumulative_corrige[i] = cumulative_classes[-1]
         return cumulative_corrige.tolist()
     except Exception as e:
-        raise RuntimeError(f"Erreur lors de l'application de la correction DNA : {e}") from e
+        raise RuntimeError(
+            f"Erreur lors de l'application de la correction DNA : {e}"
+        ) from e

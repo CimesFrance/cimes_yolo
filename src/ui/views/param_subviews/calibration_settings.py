@@ -8,7 +8,12 @@ import subprocess
 import threading
 import sys
 
-from src.ui.widgets.ui_utils import COLOR_CARD_BG, COLOR_ACCENT, create_setting_header, add_tooltip
+from src.ui.widgets.ui_utils import (
+    COLOR_CARD_BG,
+    COLOR_ACCENT,
+    create_setting_header,
+    add_tooltip,
+)
 from src.utils.file_manager import (
     load_calibration_files,
     load_conversion_param,
@@ -230,7 +235,7 @@ def _call_measure_app(view):
         )  # pylint: disable=consider-using-with
 
     def wait_and_update():
-        """Attend que l'application de calibration 
+        """Attend que l'application de calibration
         se ferme et met à jour le facteur de conversion"""
         view.calibration_process.wait()
         view.parent.after(0, _update_conversion)

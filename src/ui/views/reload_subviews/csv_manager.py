@@ -17,6 +17,7 @@ class CsvManager:
     """
     Mixin pour ReloadView — gère les courbes CSV et l'affichage de la courbe granulométrique.
     """
+
     # pylint: disable=no-member,too-few-public-methods
     def _load_csv_curve(self):
         """Charge une courbe de tamisage depuis un fichier CSV/Excel."""
@@ -96,12 +97,13 @@ class CsvManager:
                 return False
 
             def to_float(series):
-                """ Convertit une série en float en remplaçant les virgules par des points """
+                """Convertit une série en float en remplaçant les virgules par des points"""
                 return (
                     series.astype(str)
                     .str.replace(",", ".")
                     .astype(float, errors="ignore")
                 )
+
             diameters = (
                 pd.to_numeric(to_float(df[diameter_col]), errors="coerce")
                 .dropna()

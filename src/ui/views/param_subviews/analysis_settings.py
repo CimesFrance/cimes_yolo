@@ -4,7 +4,12 @@ import tkinter as tk
 import os
 import sys
 from tkinter import ttk, messagebox
-from src.ui.widgets.ui_utils import COLOR_CARD_BG, COLOR_ACCENT, create_setting_header, add_tooltip
+from src.ui.widgets.ui_utils import (
+    COLOR_CARD_BG,
+    COLOR_ACCENT,
+    create_setting_header,
+    add_tooltip,
+)
 
 
 def create_analysis_settings(view):
@@ -95,14 +100,17 @@ def create_analysis_settings(view):
     ).pack(fill="x", pady=(0, 10))
 
     def _get_base_dir():
-        """ chemin absolu vers le modele de yolo obb"""
-        if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        """chemin absolu vers le modele de yolo obb"""
+        if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
             return sys._MEIPASS
-        return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        return os.path.dirname(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        )
 
     try:
         import ultralytics  # pylint: disable=unused-import,import-outside-toplevel
         import os  # pylint: disable=import-outside-toplevel
+
         _model_path = os.path.join(_get_base_dir(), "best.pt")
         yolo_available = os.path.isfile(_model_path)
     except ImportError:

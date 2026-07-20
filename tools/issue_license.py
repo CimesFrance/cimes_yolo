@@ -20,18 +20,34 @@ try:
     from cryptography.hazmat.primitives.serialization import load_pem_private_key
 except ImportError:
     print("[ERREUR] Le paquet 'cryptography' est requis.")
-    print("         Installez-le avec : pip install cryptography")
+    print("uv add cryptography")
     sys.exit(1)
 
 
 def main():
     parser = argparse.ArgumentParser(description="Générateur de licences CIMES")
     parser.add_argument("--client", required=True, help="Nom de l'entreprise cliente")
-    parser.add_argument("--fingerprints", required=True, help="Liste d'empreintes machine séparées par des virgules")
-    parser.add_argument("--max-postes", type=int, default=1, help="Nombre maximal de postes autorisés")
-    parser.add_argument("--expires", required=True, help="Date d'expiration au format YYYY-MM-DD")
-    parser.add_argument("--output", required=True, help="Nom ou chemin du fichier de licence généré (.lic)")
-    parser.add_argument("--private-key", default="keys/private_key.pem", help="Chemin vers la clé privée PEM")
+    parser.add_argument(
+        "--fingerprints",
+        required=True,
+        help="Liste d'empreintes machine séparées par des virgules",
+    )
+    parser.add_argument(
+        "--max-postes", type=int, default=1, help="Nombre maximal de postes autorisés"
+    )
+    parser.add_argument(
+        "--expires", required=True, help="Date d'expiration au format YYYY-MM-DD"
+    )
+    parser.add_argument(
+        "--output",
+        required=True,
+        help="Nom ou chemin du fichier de licence généré (.lic)",
+    )
+    parser.add_argument(
+        "--private-key",
+        default="keys/private_key.pem",
+        help="Chemin vers la clé privée PEM",
+    )
 
     args = parser.parse_args()
 
@@ -49,14 +65,16 @@ def main():
         print("[ERREUR] La date d'expiration doit être au format YYYY-MM-DD.")
         sys.exit(1)
 
-    # 3. Préparer les empreintes (suppression des espaces et conversion en majuscules)
+    # 3. Préparer les empreintes, suppression des espaces et conversion en majuscules
     fps = [fp.strip().upper() for fp in args.fingerprints.split(",") if fp.strip()]
     if not fps:
         print("[ERREUR] Vous devez spécifier au moins une empreinte machine valide.")
         sys.exit(1)
 
     if len(fps) > args.max_postes:
-        print(f"[AVERTISSEMENT] Le nombre d'empreintes fournies ({len(fps)}) dépasse le max-postes ({args.max_postes}).")
+        print(
+            f"[AVERTISSEMENT] Le nombre d'empreintes fournies ({len(fps)}) dépasse le max-postes ({args.max_postes})."
+        )
 
     # 4. Charger la clé privée RSA
     try:
@@ -72,7 +90,7 @@ def main():
         "fingerprints": fps,
         "max_postes": args.max_postes,
         "expires_at": expires_str,
-        "issued_at": datetime.now().strftime("%Y-%m-%d")
+        "issued_at": datetime.now().strftime("%Y-%m-%d"),
     }
 
     # 6. Sérialiser les données de manière canonique (tri des clés) pour la signature
@@ -83,10 +101,9 @@ def main():
         signature = private_key.sign(
             canonical_data.encode("utf-8"),
             padding.PSS(
-                mgf=padding.MGF1(hashes.SHA256()),
-                salt_length=padding.PSS.MAX_LENGTH
+                mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH
             ),
-            hashes.SHA256()
+            hashes.SHA256(),
         )
     except Exception as e:
         print(f"[ERREUR] Échec de la signature des données : {e}")

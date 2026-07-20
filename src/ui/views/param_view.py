@@ -19,7 +19,7 @@ from src.ui.views.param_subviews.transmission_settings import (
 
 
 class ParamView:
-    """ Classe principale de la vue Paramètres."""
+    """Classe principale de la vue Paramètres."""
 
     # pylint: disable=too-many-instance-attributes,too-few-public-methods
     def __init__(self, parent, app):
@@ -146,7 +146,9 @@ class ParamView:
         """Active/désactive les contrôles selon le mode de capture."""
         mode = self.app.capture_mode_var.get()
         if mode == "automatique":
-            self.auto_params_frame.pack(before=self.sensor_bottom_separator, fill="x", pady=(0, 20))
+            self.auto_params_frame.pack(
+                before=self.sensor_bottom_separator, fill="x", pady=(0, 20)
+            )
             self.manual_params_frame.pack_forget()
             for widget in self.capture_interval_frame.winfo_children():
                 widget.configure(state="normal")
@@ -156,7 +158,9 @@ class ParamView:
                 widget.configure(state="normal")
         else:
             self.auto_params_frame.pack_forget()
-            self.manual_params_frame.pack(before=self.sensor_bottom_separator, fill="x", pady=(0, 20))
+            self.manual_params_frame.pack(
+                before=self.sensor_bottom_separator, fill="x", pady=(0, 20)
+            )
             for widget in self.capture_interval_frame.winfo_children():
                 widget.configure(state="disabled")
             for widget in self.time_frame.winfo_children():
@@ -167,38 +171,47 @@ class ParamView:
     def _download_guide(self):
         """Permet de télécharger (sauvegarder) le guide d'utilisation PDF avec fallbacks de chemins."""
         import sys
+
         # 1. Recherche principale (dossier projet ou _MEIPASS)
         guide_path = os.path.join(get_project_root(), "assets", "Guide_Utilisation.pdf")
-        
+
         # Fallback 1 : Si exécutable PyInstaller et assets à côté du .exe
-        if not os.path.exists(guide_path) and getattr(sys, 'frozen', False):
+        if not os.path.exists(guide_path) and getattr(sys, "frozen", False):
             exe_dir = os.path.dirname(sys.executable)
             guide_path = os.path.join(exe_dir, "assets", "Guide_Utilisation.pdf")
-            
+
         # Fallback 2 : Recherche dans le dossier de travail courant
         if not os.path.exists(guide_path):
             guide_path = os.path.join(os.getcwd(), "assets", "Guide_Utilisation.pdf")
-            
+
         if not os.path.exists(guide_path):
             messagebox.showwarning(
                 "Fichier introuvable",
                 "Le guide d'utilisation (Guide_Utilisation.pdf) est introuvable.\n"
                 "Vérifiez que le dossier 'assets' contenant le PDF existe à côté de l'application.",
-                parent=self.frame
+                parent=self.frame,
             )
             return
-            
+
         save_path = filedialog.asksaveasfilename(
             parent=self.frame,
             defaultextension=".pdf",
             initialfile="Guide_Utilisation.pdf",
             title="Enregistrer le guide d'utilisation",
-            filetypes=[("Fichiers PDF", "*.pdf")]
+            filetypes=[("Fichiers PDF", "*.pdf")],
         )
-        
+
         if save_path:
             try:
                 shutil.copy2(guide_path, save_path)
-                messagebox.showinfo("Succès", "Le guide a été téléchargé avec succès.", parent=self.frame)
+                messagebox.showinfo(
+                    "Succès",
+                    "Le guide a été téléchargé avec succès.",
+                    parent=self.frame,
+                )
             except Exception as e:
-                messagebox.showerror("Erreur", f"Erreur lors du téléchargement :\n{str(e)}", parent=self.frame)
+                messagebox.showerror(
+                    "Erreur",
+                    f"Erreur lors du téléchargement :\n{str(e)}",
+                    parent=self.frame,
+                )

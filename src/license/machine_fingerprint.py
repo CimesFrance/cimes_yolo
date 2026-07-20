@@ -51,7 +51,14 @@ def _get_disk_uuid() -> str:
     # Tentative 2 : VolumeSerialNumber via wmic logicaldisk
     try:
         result = subprocess.run(
-            ["wmic", "logicaldisk", "where", "DeviceID='C:'", "get", "VolumeSerialNumber"],
+            [
+                "wmic",
+                "logicaldisk",
+                "where",
+                "DeviceID='C:'",
+                "get",
+                "VolumeSerialNumber",
+            ],
             capture_output=True,
             text=True,
             timeout=5,
@@ -119,10 +126,10 @@ def compute_fingerprint() -> str:
         str: Empreinte au format 'XXXX-XXXX-XXXX-XXXX'; de 19 caractères.
     """
     disk_uuid = _get_disk_uuid()
-    cpu_id    = _get_cpu_id()
-    hostname  = _get_hostname()
+    cpu_id = _get_cpu_id()
+    hostname = _get_hostname()
 
-    raw    = f"CIMES|{disk_uuid}|{cpu_id}|{hostname}"
+    raw = f"CIMES|{disk_uuid}|{cpu_id}|{hostname}"
     digest = hashlib.sha256(raw.encode("utf-8")).hexdigest().upper()
 
     return f"{digest[0:4]}-{digest[4:8]}-{digest[8:12]}-{digest[12:16]}"
@@ -136,18 +143,18 @@ def get_fingerprint_details() -> dict:
         dict avec les clés : fingerprint, disk_uuid, cpu_id, hostname
     """
     disk_uuid = _get_disk_uuid()
-    cpu_id    = _get_cpu_id()
-    hostname  = _get_hostname()
+    cpu_id = _get_cpu_id()
+    hostname = _get_hostname()
 
-    raw    = f"CIMES|{disk_uuid}|{cpu_id}|{hostname}"
+    raw = f"CIMES|{disk_uuid}|{cpu_id}|{hostname}"
     digest = hashlib.sha256(raw.encode("utf-8")).hexdigest().upper()
-    fp     = f"{digest[0:4]}-{digest[4:8]}-{digest[8:12]}-{digest[12:16]}"
+    fp = f"{digest[0:4]}-{digest[4:8]}-{digest[8:12]}-{digest[12:16]}"
 
     return {
         "fingerprint": fp,
-        "disk_uuid":   disk_uuid or "(non trouvé)",
-        "cpu_id":      cpu_id,
-        "hostname":    hostname,
+        "disk_uuid": disk_uuid or "(non trouvé)",
+        "cpu_id": cpu_id,
+        "hostname": hostname,
     }
 
 

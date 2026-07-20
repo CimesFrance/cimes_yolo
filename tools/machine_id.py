@@ -49,16 +49,18 @@ class MachineIdDialog(tk.Tk):
             except Exception as e:
                 print(f"[Avertissement] iconbitmap a échoué : {e}")
         else:
-            print("[Avertissement] cimes-logo.ico introuvable dans aucun emplacement connu.")
+            print(
+                "[Avertissement] cimes-logo.ico introuvable dans aucun emplacement connu."
+            )
 
         # Centrer la fenêtre sur l'écran
         self.update_idletasks()
-        x = (self.winfo_screenwidth()  // 2) - (540 // 2)
+        x = (self.winfo_screenwidth() // 2) - (540 // 2)
         y = (self.winfo_screenheight() // 2) - (310 // 2)
         self.geometry(f"+{x}+{y}")
 
         # Couleurs charte graphique CIMES
-        self.bg_color     = "#2C3E50"
+        self.bg_color = "#2C3E50"
         self.accent_color = "#F76F00"
         self.configure(bg=self.bg_color)
 
@@ -68,9 +70,9 @@ class MachineIdDialog(tk.Tk):
         except Exception as exc:  # pylint: disable=broad-except
             self._details = {
                 "fingerprint": "ERREUR",
-                "disk_uuid":   str(exc),
-                "cpu_id":      "—",
-                "hostname":    "—",
+                "disk_uuid": str(exc),
+                "cpu_id": "—",
+                "hostname": "—",
             }
 
         self._create_widgets()
@@ -81,7 +83,7 @@ class MachineIdDialog(tk.Tk):
         main_frame = tk.Frame(self, bg=self.bg_color, padx=25, pady=25)
         main_frame.pack(fill="both", expand=True)
 
-        # Titre principal 
+        # Titre principal
         tk.Label(
             main_frame,
             text="🔑 Activation de Licence",
@@ -91,7 +93,7 @@ class MachineIdDialog(tk.Tk):
             anchor="w",
         ).pack(fill="x", pady=(0, 15))
 
-        # Message informatif 
+        # Message informatif
         tk.Label(
             main_frame,
             text=(
@@ -114,7 +116,7 @@ class MachineIdDialog(tk.Tk):
             anchor="w",
         ).pack(fill="x", pady=(0, 5))
 
-        # Champ empreinte 
+        # Champ empreinte
         fp_var = tk.StringVar(value=self._details["fingerprint"])
         self.fp_entry = tk.Entry(
             main_frame,
@@ -185,16 +187,21 @@ class MachineIdDialog(tk.Tk):
         self.clipboard_clear()
         self.clipboard_append(self._details["fingerprint"])
         self.update()
-        self.status_label.config(text="Identifiant copié dans le presse-papiers !", fg="#D35400")
+        self.status_label.config(
+            text="Identifiant copié dans le presse-papiers !", fg="#D35400"
+        )
         self.copy_btn.config(text="Copié !")
-        self.after(2500, lambda: (
-            self.copy_btn.config(text="Copier l'identifiant"),
-            self.status_label.config(text=""),
-        ))
+        self.after(
+            2500,
+            lambda: (
+                self.copy_btn.config(text="Copier l'identifiant"),
+                self.status_label.config(text=""),
+            ),
+        )
 
     def _open_email(self) -> None:
         subject = urllib.parse.quote("Demande d'activation CIMES")
-        body    = urllib.parse.quote(
+        body = urllib.parse.quote(
             f"Bonjour,\n\n"
             f"Je souhaite activer ma licence CIMES.\n\n"
             f"Identifiant machine : {self._details['fingerprint']}\n"
@@ -210,19 +217,29 @@ class MachineIdDialog(tk.Tk):
 #  Point d'entrée
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 def _find_icon_path():
     """Cherche le fichier cimes-logo.ico dans plusieurs emplacements."""
     candidates = []
     # Si exe compilé PyInstaller
-    if getattr(sys, 'frozen', False):
+    if getattr(sys, "frozen", False):
         exe_dir = os.path.dirname(sys.executable)
         candidates.append(os.path.join(exe_dir, "cimes-logo.ico"))
-        if hasattr(sys, '_MEIPASS'):
+        if hasattr(sys, "_MEIPASS"):
             candidates.append(os.path.join(sys._MEIPASS, "cimes-logo.ico"))
     # En développement
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(script_dir)
-    candidates.append(os.path.join(project_root, "modules", "app_change_corr_params", "assets", "icons", "cimes-logo.ico"))
+    candidates.append(
+        os.path.join(
+            project_root,
+            "modules",
+            "app_change_corr_params",
+            "assets",
+            "icons",
+            "cimes-logo.ico",
+        )
+    )
     candidates.append(os.path.join(project_root, "assets", "icons", "cimes-logo.ico"))
     for p in candidates:
         if os.path.exists(p):
@@ -233,7 +250,9 @@ def _find_icon_path():
 def main() -> None:
     # CRITIQUE : doit être appelé AVANT toute création de fenêtre Tk
     try:
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("cimes.license.activation.1.0")
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+            "cimes.license.activation.1.0"
+        )
     except Exception:
         pass
 

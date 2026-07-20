@@ -9,7 +9,7 @@ import numpy as np
 
 def undistort_img(dist, mtx, cv2_bgr_img, crop_box=None):
     """Fonction qui corrige les distorsions sur une image.
-    
+
     Permet de rogner l'image selon crop_box=(x, y, w, h).
     Si crop_box est None, tente de charger depuis la configuration utilisateur
     ou utilise les valeurs par défaut, avec limitation automatique aux dimensions de l'image.
@@ -25,10 +25,10 @@ def undistort_img(dist, mtx, cv2_bgr_img, crop_box=None):
             mtx, dist, (width, height), 1, (width, height)
         )
         img_undist = cv2.undistort(cv2_bgr_img, mtx, dist, None, cam_matrix_new)
-        
+
         # Coordonnées par défaut
         x, y, w, h = 411, 328, 1340, 630
-        
+
         # Tentative de chargement depuis la configuration
         if crop_box is not None:
             x, y, w, h = crop_box
@@ -36,26 +36,31 @@ def undistort_img(dist, mtx, cv2_bgr_img, crop_box=None):
             try:
                 import json
                 import os
+
                 settings_file = os.path.join(
-                    os.path.expanduser("~"), "CIMES_Settings", "calibration_settings.json"
+                    os.path.expanduser("~"),
+                    "CIMES_Settings",
+                    "calibration_settings.json",
                 )
                 if os.path.exists(settings_file):
                     with open(settings_file, "r", encoding="utf-8") as f:
                         data = json.load(f)
-                        if all(k in data for k in ("crop_x", "crop_y", "crop_w", "crop_h")):
+                        if all(
+                            k in data for k in ("crop_x", "crop_y", "crop_w", "crop_h")
+                        ):
                             x = int(data["crop_x"])
                             y = int(data["crop_y"])
                             w = int(data["crop_w"])
                             h = int(data["crop_h"])
             except Exception:
                 pass  # Fallback silencieux en cas d'erreur de lecture
-        
+
         # Limitation dynamique aux dimensions de l'image (évite IndexError)
         x = max(0, min(x, width - 1))
         y = max(0, min(y, height - 1))
         w = max(1, min(w, width - x))
         h = max(1, min(h, height - y))
-        
+
         cropped_undist = img_undist[y : y + h, x : x + w]
         return cropped_undist
     except Exception as e:

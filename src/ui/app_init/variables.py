@@ -1,12 +1,11 @@
 """
 Initialisation de toutes les variables tkinter de l'application principale.
 """
+
 import tkinter as tk
 import os
 
-from src.ui.widgets.ui_utils import (
-    COLOR_STATUS_STOPPED, LOGO_PATH
-)
+from src.ui.widgets.ui_utils import COLOR_STATUS_STOPPED, LOGO_PATH
 from src.utils.file_manager import load_correction_parameters, load_conversion_param
 
 
@@ -25,7 +24,9 @@ def initialize_variables(app):
     app.status_detail_var = tk.StringVar(value="(Hors-ligne)")
     # Paramètres du capteur
     app.url_var = tk.StringVar(value="rtsp://192.168.1.30:554/stream1")
-    app.save_path_var = tk.StringVar(value=os.path.join(os.path.expanduser("~"), "CIMES_Data"))
+    app.save_path_var = tk.StringVar(
+        value=os.path.join(os.path.expanduser("~"), "CIMES_Data")
+    )
     app.start_time_var = tk.StringVar(value="08:00")
     app.end_time_var = tk.StringVar(value="18:00")
     app.capture_time_val_var = tk.StringVar(value="5")
@@ -36,12 +37,12 @@ def initialize_variables(app):
     app.particles_count_var = tk.StringVar(value="0")
     # Jours de fonctionnement
     app.days_vars = {
-        "Lundi":    tk.BooleanVar(value=True),
-        "Mardi":    tk.BooleanVar(value=True),
+        "Lundi": tk.BooleanVar(value=True),
+        "Mardi": tk.BooleanVar(value=True),
         "Mercredi": tk.BooleanVar(value=True),
-        "Jeudi":    tk.BooleanVar(value=True),
+        "Jeudi": tk.BooleanVar(value=True),
         "Vendredi": tk.BooleanVar(value=True),
-        "Samedi":   tk.BooleanVar(value=False),
+        "Samedi": tk.BooleanVar(value=False),
         "Dimanche": tk.BooleanVar(value=False),
     }
     # Mode de capture
@@ -52,13 +53,13 @@ def initialize_variables(app):
     app.transmission_time_var = tk.StringVar(value="17:00")
     # Nouveau formulaire SMTP
     app.mail_poste_var = tk.StringVar(value="")
-    app.mail_mode_var = tk.StringVar(value="none")          # none | error | error_result
+    app.mail_mode_var = tk.StringVar(value="none")  # none | error | error_result
     app.mail_recipients_var = tk.StringVar(value="")
     app.mail_server_var = tk.StringVar(value="")
     app.mail_port_var = tk.StringVar(value="587")
     app.mail_sender_var = tk.StringVar(value="")
     app.mail_password_var = tk.StringVar(value="")
-    app.mail_security_var = tk.StringVar(value="none")      # ssl | tls | none
+    app.mail_security_var = tk.StringVar(value="none")  # ssl | tls | none
     # Rétrocompatibilité
     app.transmission_email_var = app.mail_recipients_var
     # Chemins
@@ -80,17 +81,17 @@ def initialize_variables(app):
     app.nav_buttons = {}
     # Options du rapport
     app.report_options = {
-        "include_captured_image":    tk.BooleanVar(value=True),
-        "include_segmented_image":   tk.BooleanVar(value=True),
+        "include_captured_image": tk.BooleanVar(value=True),
+        "include_segmented_image": tk.BooleanVar(value=True),
         "include_granulometric_curve": tk.BooleanVar(value=True),
         "include_distribution_curve": tk.BooleanVar(value=True),
-        "include_statistics":        tk.BooleanVar(value=True),
-        "custom_comment":            tk.StringVar(value=""),
+        "include_statistics": tk.BooleanVar(value=True),
+        "custom_comment": tk.StringVar(value=""),
     }
     # Correction empirique
     vars_corr = load_correction_parameters()
     app.correction_granulo = {
-        "scale":  tk.DoubleVar(value=vars_corr["scale"]),
+        "scale": tk.DoubleVar(value=vars_corr["scale"]),
         "offset": tk.DoubleVar(value=vars_corr["offset"]),
     }
     # Calibration

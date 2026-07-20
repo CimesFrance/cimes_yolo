@@ -25,12 +25,13 @@ from src.ui.views.measure_subviews.chart_renderer import ChartRenderer
 
 class MeasureView(CapturePipeline, ChartRenderer):
     """Classe principale de la vue Mesure"""
+
     # pylint: disable=too-many-instance-attributes
 
     def __init__(self, parent, app):
         """
         Initialise la vue Mesure.
-        
+
         Args:
             parent: Widget parent
             app: Instance de l'application principale
@@ -253,6 +254,7 @@ class MeasureView(CapturePipeline, ChartRenderer):
             "En attente de données pour la courbe...",
         )
         self.curve_label = curve_card.winfo_children()[1].winfo_children()[0]
+
     # ── Méthodes d'interface ────────────────────────────────────────────
     def update_active_params_display(self):
         """Met à jour l'affichage des paramètres actifs."""

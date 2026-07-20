@@ -13,6 +13,7 @@ class StatsPanel:
     """
     Mixin pour CurveView — gère le panneau de statistiques.
     """
+
     # pylint: disable=no-member,attribute-defined-outside-init,too-few-public-methods
 
     def _create_fixed_stat_labels(self):

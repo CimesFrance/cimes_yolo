@@ -21,6 +21,7 @@ class CapturePipeline:
     Prérequis : l'objet possède self.app et les labels self.segmented_label,
     self.curve_label, self.captured_label.
     """
+
     # pylint: disable=no-member,attribute-defined-outside-init,too-few-public-methods
 
     def _manual_capture(self):
@@ -145,7 +146,9 @@ class CapturePipeline:
         """Vérifie la file de traitement et met à jour l'interface."""
         try:
             while True:
-                msg_type, data = self.capture_queue.get_nowait()  # permet de ne pas bloquer
+                msg_type, data = (
+                    self.capture_queue.get_nowait()
+                )  # permet de ne pas bloquer
                 if msg_type == "results":
                     self._update_capture_results(data)
                 elif msg_type == "error":
@@ -191,7 +194,9 @@ class CapturePipeline:
         save_capture_data(capture_data, self.app.results_path_var.get(), self.app)
         if hasattr(self.app, "curve_view"):
             self.app.curve_view._update_capture_history_display()  # pylint: disable=protected-access
-            self.app.curve_view._update_curve_view_for_capture(capture_data["id"])  # pylint: disable=protected-access
+            self.app.curve_view._update_curve_view_for_capture(
+                capture_data["id"]
+            )  # pylint: disable=protected-access
             self.app.curve_view._update_particles_table()  # pylint: disable=protected-access
             self.app.curve_view.update_statistics_display(capture_data)
         self.app.daily_data.append(capture_data)

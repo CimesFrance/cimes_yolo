@@ -9,6 +9,7 @@ import sys
 # Vérifier disponibilité de skimage
 try:
     from skimage.measure import label, regionprops
+
     SKIMAGE_AVAILABLE = True
 except ImportError:
     SKIMAGE_AVAILABLE = False
@@ -16,6 +17,7 @@ except ImportError:
 # Vérifier disponibilité de YOLO
 try:
     from ultralytics import YOLO
+
     YOLO_AVAILABLE = True
 except ImportError:
     YOLO_AVAILABLE = False
@@ -25,10 +27,11 @@ from src.core.calibration import undistort_img, homo_and_pixel_conversion
 
 
 def _get_base_dir():
-    """ chemin absolu vers le modele de yolo obb"""
-    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    """chemin absolu vers le modele de yolo obb"""
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
         return sys._MEIPASS
     return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 
 # Chemin du modèle YOLO-OBB entraîné
 YOLO_MODEL_PATH = os.path.join(_get_base_dir(), "best.pt")
@@ -153,7 +156,9 @@ def segment_and_analyze(
         print("[OK] Utilisation du modèle YOLO-OBB pré-chargé")
     model = _yolo_model
 
-    print(f"[DEBUG] Inférence YOLO sur image de taille {processed_image.shape}, conf={conf_threshold}")
+    print(
+        f"[DEBUG] Inférence YOLO sur image de taille {processed_image.shape}, conf={conf_threshold}"
+    )
     try:
         results = model.predict(processed_image, verbose=False, conf=conf_threshold)
         print("[OK] Inférence YOLO terminée")

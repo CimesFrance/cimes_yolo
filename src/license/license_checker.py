@@ -26,9 +26,10 @@ logger = logging.getLogger(__name__)
 @dataclass
 class LicenseStatus:
     """Résultat de la vérification de licence."""
+
     valid: bool
     client: Optional[str] = None
-    expires: Optional[str] = None       # "YYYY-MM-DD"
+    expires: Optional[str] = None  # "YYYY-MM-DD"
     days_remaining: Optional[int] = None
     message: str = ""
     license_key: Optional[str] = None  # Conservé pour compatibilité ascendante
@@ -56,13 +57,13 @@ def check_license() -> LicenseStatus:
         LicenseStatus avec l'état de la licence.
     """
     lic_path = get_license_file_path()
-    
+
     # 1. Recherche du fichier .lic
     if not lic_path or not lic_path.exists():
         return LicenseStatus(
             valid=False,
             message="Aucun fichier de licence (.lic) trouvé.\n"
-                    "Veuillez copier votre fichier de licence dans le dossier de l'application."
+            "Veuillez copier votre fichier de licence dans le dossier de l'application.",
         )
 
     try:
@@ -72,15 +73,14 @@ def check_license() -> LicenseStatus:
     except Exception as exc:
         return LicenseStatus(
             valid=False,
-            message=f"Le fichier de licence est corrompu ou illisible :\n{exc}"
+            message=f"Le fichier de licence est corrompu ou illisible :\n{exc}",
         )
 
     # Extraction de la signature
     signature_hex = lic_data.pop("signature", None)
     if not signature_hex:
         return LicenseStatus(
-            valid=False,
-            message="Format de licence invalide : signature manquante."
+            valid=False, message="Format de licence invalide : signature manquante."
         )
 
     # 3. Vérifier la signature RSA
@@ -88,24 +88,23 @@ def check_license() -> LicenseStatus:
         # Sérialisation canonique (tri des clés pour correspondre à la signature d'origine)
         canonical_data = json.dumps(lic_data, sort_keys=True)
         signature = bytes.fromhex(signature_hex)
-        
+
         # Charger la clé publique
         public_key = load_pem_public_key(PUBLIC_KEY_PEM)
-        
+
         # Vérification
         public_key.verify(
             signature,
             canonical_data.encode("utf-8"),
             padding.PSS(
-                mgf=padding.MGF1(hashes.SHA256()),
-                salt_length=padding.PSS.MAX_LENGTH
+                mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH
             ),
-            hashes.SHA256()
+            hashes.SHA256(),
         )
     except Exception:
         return LicenseStatus(
             valid=False,
-            message="Signature de licence invalide. Le fichier a été falsifié."
+            message="Signature de licence invalide. Le fichier a été falsifié.",
         )
 
     # Récupération des informations de licence validées
@@ -121,8 +120,8 @@ def check_license() -> LicenseStatus:
             valid=False,
             client=client,
             message=f"Cette licence n'est pas autorisée pour ce poste.\n"
-                    f"Identifiant de cette machine : {local_fp}\n"
-                    f"Contactez le support à activation@cimes.fr."
+            f"Identifiant de cette machine : {local_fp}\n"
+            f"Contactez le support à activation@cimes.fr.",
         )
 
     # 5. Vérifier la date d'expiration
@@ -134,7 +133,7 @@ def check_license() -> LicenseStatus:
             expires=expires_at,
             days_remaining=days,
             message=f"La licence pour '{client}' a expiré le {expires_at}.\n"
-                    f"Contactez le support pour la renouveler."
+            f"Contactez le support pour la renouveler.",
         )
 
     # Licence valide !
@@ -144,7 +143,7 @@ def check_license() -> LicenseStatus:
         expires=expires_at,
         days_remaining=days,
         message=f"Licence active pour '{client}' (expire dans {days} jour(s)).",
-        license_key="LICENCE-LOCALE"
+        license_key="LICENCE-LOCALE",
     )
 
 
@@ -157,34 +156,34 @@ def register_license(filepath_or_key: str) -> LicenseStatus:
                          soit une clé texte brute (non supportée dans le nouveau système).
     """
     filepath = filepath_or_key.strip()
-    
+
     if not filepath.lower().endswith(".lic"):
         return LicenseStatus(
             valid=False,
             message="Le format de clé texte n'est plus utilisé.\n"
-                    "Veuillez sélectionner ou fournir un fichier de licence (.lic)."
+            "Veuillez sélectionner ou fournir un fichier de licence (.lic).",
         )
 
     if not os.path.exists(filepath):
         return LicenseStatus(
             valid=False,
-            message=f"Fichier de licence introuvable au chemin spécifié : {filepath}"
+            message=f"Fichier de licence introuvable au chemin spécifié : {filepath}",
         )
 
     try:
         dest_dir = _find_base_dir()
         dest_path = dest_dir / "license.lic"
-        
+
         # Copie du fichier
         shutil.copy2(filepath, dest_path)
-        
+
         # Re-vérifier après installation
         return check_license()
-        
+
     except Exception as exc:
         return LicenseStatus(
             valid=False,
-            message=f"Erreur lors de l'installation du fichier de licence :\n{exc}"
+            message=f"Erreur lors de l'installation du fichier de licence :\n{exc}",
         )
 
 

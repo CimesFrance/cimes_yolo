@@ -1,4 +1,4 @@
-""" 
+"""
 Ce fichier contient des fonctions supplémentaires pour l'analyse des particules
 """
 

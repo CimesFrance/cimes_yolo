@@ -20,21 +20,24 @@ class LicenseActivationDialog(tk.Tk):
         self.withdraw()  # Cacher la fenêtre pendant sa construction
         self.on_activate_callback = on_activate_callback
         self.result = False
-        
+
         self.title("Activation de licence — CIMES")
         self.geometry("540x360")
         self.resizable(False, False)
-        
+
         # Hack d'icône Windows pour la barre des tâches
         try:
             import ctypes
-            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("cimes.license.activation.1.0")
+
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+                "cimes.license.activation.1.0"
+            )
         except Exception:
             pass
 
         # Icône de l'application
         self._apply_icon()
-            
+
         # Centrer la fenêtre sur l'écran
         self.update_idletasks()
         width = self.winfo_width()
@@ -42,12 +45,12 @@ class LicenseActivationDialog(tk.Tk):
         x = (self.winfo_screenwidth() // 2) - (width // 2)
         y = (self.winfo_screenheight() // 2) - (height // 2)
         self.geometry(f"+{x}+{y}")
-        
+
         # Style & Couleurs
         self.bg_color = "#2C3E50"  # COLOR_BG_DARK
         self.accent_color = "#F76F00"  # COLOR_ACCENT
         self.configure(bg=self.bg_color)
-        
+
         # Empreinte machine
         try:
             self.machine_fp = compute_fingerprint()
@@ -61,7 +64,15 @@ class LicenseActivationDialog(tk.Tk):
         """Cherche et applique l'icône de l'application."""
         try:
             from src.utils.file_manager import get_project_root
-            icon_path = os.path.join(get_project_root(), "modules", "app_change_corr_params", "assets", "icons", "cimes-logo.ico")
+
+            icon_path = os.path.join(
+                get_project_root(),
+                "modules",
+                "app_change_corr_params",
+                "assets",
+                "icons",
+                "cimes-logo.ico",
+            )
             if os.path.exists(icon_path):
                 self.iconbitmap(icon_path)
                 self.wm_iconbitmap(default=icon_path)
@@ -72,7 +83,7 @@ class LicenseActivationDialog(tk.Tk):
         # Frame principal avec marges
         main_frame = tk.Frame(self, bg=self.bg_color, padx=25, pady=25)
         main_frame.pack(fill="both", expand=True)
-        
+
         # ── Titre principal ──────────────────────────────────────────────────
         title_label = tk.Label(
             main_frame,
@@ -80,10 +91,10 @@ class LicenseActivationDialog(tk.Tk):
             font=("Segoe UI", 16, "bold"),
             bg=self.bg_color,
             fg="white",
-            anchor="w"
+            anchor="w",
         )
         title_label.pack(fill="x", pady=(0, 10))
-        
+
         # ── Message d'instruction ───────────────────────────────────────────
         msg_text = (
             "Cette machine n'a pas encore de licence active.\n"
@@ -96,10 +107,10 @@ class LicenseActivationDialog(tk.Tk):
             bg=self.bg_color,
             fg="#ECF0F1",
             justify="left",
-            anchor="w"
+            anchor="w",
         )
         msg_label.pack(fill="x", pady=(0, 15))
-        
+
         # ── Cadre d'empreinte machine ────────────────────────────────────────
         fp_frame = tk.LabelFrame(
             main_frame,
@@ -108,7 +119,7 @@ class LicenseActivationDialog(tk.Tk):
             bg=self.bg_color,
             fg=self.accent_color,
             bd=1,
-            relief="solid"
+            relief="solid",
         )
         fp_frame.pack(fill="x", pady=(0, 20), ipady=8, padx=1)
 
@@ -122,7 +133,7 @@ class LicenseActivationDialog(tk.Tk):
             font=("Consolas", 12, "bold"),
             bg=self.bg_color,
             fg="white",
-            anchor="w"
+            anchor="w",
         )
         self.fp_label.pack(side="left")
 
@@ -140,7 +151,7 @@ class LicenseActivationDialog(tk.Tk):
             command=self._copy_fingerprint,
             padx=10,
             pady=2,
-            cursor="hand2"
+            cursor="hand2",
         )
         self.copy_btn.pack(side="right")
 
@@ -158,7 +169,7 @@ class LicenseActivationDialog(tk.Tk):
             command=self._open_email,
             padx=10,
             pady=2,
-            cursor="hand2"
+            cursor="hand2",
         )
         self.mail_btn.pack(side="right", padx=(0, 6))
 
@@ -170,14 +181,14 @@ class LicenseActivationDialog(tk.Tk):
             bg=self.bg_color,
             fg="#E74C3C",
             anchor="w",
-            wraplength=470
+            wraplength=470,
         )
         self.status_label.pack(fill="x", pady=(0, 15))
-        
+
         # ── Zone des boutons en bas ──────────────────────────────────────────
         btn_frame = tk.Frame(main_frame, bg=self.bg_color)
         btn_frame.pack(fill="x", side="bottom")
-        
+
         # Bouton Quitter
         cancel_btn = tk.Button(
             btn_frame,
@@ -192,10 +203,10 @@ class LicenseActivationDialog(tk.Tk):
             command=self._on_cancel,
             padx=20,
             pady=6,
-            cursor="hand2"
+            cursor="hand2",
         )
         cancel_btn.pack(side="left")
-        
+
         # Bouton Sélectionner et Activer
         self.activate_btn = tk.Button(
             btn_frame,
@@ -210,7 +221,7 @@ class LicenseActivationDialog(tk.Tk):
             command=self._on_select_file,
             padx=20,
             pady=6,
-            cursor="hand2"
+            cursor="hand2",
         )
         self.activate_btn.pack(side="right")
 
@@ -236,30 +247,34 @@ class LicenseActivationDialog(tk.Tk):
         lic_file = filedialog.askopenfilename(
             parent=self,
             title="Sélectionner le fichier de licence CIMES",
-            filetypes=[("Fichiers de licence", "*.lic")]
+            filetypes=[("Fichiers de licence", "*.lic")],
         )
-        
+
         if not lic_file:
             return
-            
-        self.status_label.config(text="Validation du fichier de licence en cours...", fg="#F1C40F")
+
+        self.status_label.config(
+            text="Validation du fichier de licence en cours...", fg="#F1C40F"
+        )
         self.update()
-        
+
         self.activate_btn.config(state="disabled")
         self.after(100, self._perform_activation, lic_file)
-        
+
     def _perform_activation(self, filepath):
         success, message = self.on_activate_callback(filepath)
         self.activate_btn.config(state="normal")
-        
+
         if success:
             self.result = True
-            self.status_label.config(text="Licence activée avec succès ! Démarrage...", fg="#2ECC71")
+            self.status_label.config(
+                text="Licence activée avec succès ! Démarrage...", fg="#2ECC71"
+            )
             self.update()
             self.after(1000, self.destroy)
         else:
             self.status_label.config(text=message, fg="#E74C3C")
-            
+
     def _on_cancel(self):
         self.result = False
         self.destroy()

@@ -22,6 +22,7 @@ class ImageAnalyzer:
     """
     Mixin pour ReloadView — gestion du chargement et de l'analyse d'images.
     """
+
     # pylint: disable=no-member,attribute-defined-outside-init,too-few-public-methods
     def _browse_and_analyze_image(self):
         file_path = filedialog.askopenfilename(
@@ -42,7 +43,7 @@ class ImageAnalyzer:
             self._display_image_preview(file_path)
 
     def _display_image_preview(self, image_path):
-        """ Affichage de l'aperçu de l'image dans la colonne latérale"""
+        """Affichage de l'aperçu de l'image dans la colonne latérale"""
         try:
             image = cv2.imread(image_path)
             if image is None:
@@ -60,7 +61,7 @@ class ImageAnalyzer:
             self._display_error_in_sidebar(f"Erreur de chargement:\n{str(e)}")
 
     def _display_thumbnail_in_sidebar(self, pil_image, image_path, image_shape):
-        """ Affichage de l'aperçu de l'image dans la colonne latérale"""
+        """Affichage de l'aperçu de l'image dans la colonne latérale"""
         for widget in self.reload_left_panel.winfo_children():
             widget.destroy()
         img_frame = tk.Frame(self.reload_left_panel, bg=COLOR_CARD_BG)
@@ -101,7 +102,7 @@ class ImageAnalyzer:
         ).pack()
 
     def _display_error_in_sidebar(self, error_message):
-        """ Affichage d'un message d'erreur dans la colonne latérale"""
+        """Affichage d'un message d'erreur dans la colonne latérale"""
         for widget in self.reload_left_panel.winfo_children():
             widget.destroy()
         tk.Label(
@@ -113,7 +114,7 @@ class ImageAnalyzer:
         ).pack(expand=True)
 
     def _clear_segmented_tab(self):
-        """ Nettoyage de l'onglet segmenté """
+        """Nettoyage de l'onglet segmenté"""
         for widget in self.segmented_image_container.winfo_children():
             widget.destroy()
         self.segmented_label = tk.Label(
@@ -126,7 +127,7 @@ class ImageAnalyzer:
         self.segmented_label.pack(expand=True)
 
     def _clear_curve_tab(self):
-        """ Nettoyage de l'onglet courbe """
+        """Nettoyage de l'onglet courbe"""
         for widget in self.reload_curve_frame.winfo_children():
             widget.destroy()
         self.curve_label = tk.Label(
@@ -139,7 +140,7 @@ class ImageAnalyzer:
         self.curve_label.pack(expand=True)
 
     def _analyze_loaded_image(self):
-        """ Lancement de l'analyse de l'image chargée """
+        """Lancement de l'analyse de l'image chargée"""
         if not self.loaded_image_path or self.loaded_image_data is None:
             messagebox.showwarning(
                 "Attention", "Veuillez d'abord sélectionner une image."
@@ -157,7 +158,7 @@ class ImageAnalyzer:
             self.analyze_btn.config(state="normal", text="🔬 Analyser l'image")
 
     def _process_loaded_image(self, image, facteur):
-        """ Traitement de l'image chargée"""
+        """Traitement de l'image chargée"""
         # pylint: disable=too-many-locals
         try:
             processed_frame = image.copy()
@@ -205,7 +206,7 @@ class ImageAnalyzer:
             traceback.print_exc()
 
     def _display_loaded_results(self, capture_data):
-        """ Affichage des résultats de l'analyse de l'image chargée"""
+        """Affichage des résultats de l'analyse de l'image chargée"""
         self.analyze_btn.config(state="normal", text="🔬 Analyser l'image")
         self.current_reload_capture = capture_data
         self._display_segmented_image(capture_data["segmented_image"])
@@ -216,7 +217,7 @@ class ImageAnalyzer:
         )
 
     def _display_segmented_image(self, segmented_img):
-        """ Affichage de l'image segmentée """
+        """Affichage de l'image segmentée"""
         if segmented_img is None:
             self.segmented_label.config(text="Segmentation non disponible")
             return
@@ -265,7 +266,7 @@ class ImageAnalyzer:
             ).pack(expand=True)
 
     def _display_loaded_error(self, error_msg):
-        """ Affichage de l'erreur d'analyse """
+        """Affichage de l'erreur d'analyse"""
         self.analyze_btn.config(state="normal", text="🔬 Analyser l'image")
         self._clear_segmented_tab()
         self.segmented_label.config(text=f"❌ Erreur d'analyse\n{error_msg}")

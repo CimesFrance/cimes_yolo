@@ -136,7 +136,6 @@ def create_transmission_settings(view):
     if view.app.report_options["custom_comment"].get():
         view.comment_text.insert("1.0", view.app.report_options["custom_comment"].get())
 
-
     # ── Bloc SMTP d'envoi du mail (visible seulement si mode != none) ─────────────────────────
     view.smtp_block = tk.Frame(
         inner,
@@ -184,8 +183,8 @@ def create_transmission_settings(view):
         ),
     )
     _smtp_row("Serveur mail", view.app.mail_server_var)
-    _smtp_row("Port",         view.app.mail_port_var)
-    _smtp_row("Expéditeur",   view.app.mail_sender_var)
+    _smtp_row("Port", view.app.mail_port_var)
+    _smtp_row("Expéditeur", view.app.mail_sender_var)
     _smtp_row("Mot de passe", view.app.mail_password_var, show=True)
 
     # Sécurité : SSL / TLS / Aucune
@@ -207,7 +206,6 @@ def create_transmission_settings(view):
             value=val,
             variable=view.app.mail_security_var,
         ).pack(side="left", padx=(0, 14))
-
 
     # ── Boutons Sauvegarder / Envoyer ─────────────────────────────────────────
     btn_row = tk.Frame(inner, bg=COLOR_CARD_BG)
@@ -239,6 +237,7 @@ def create_transmission_settings(view):
 # Helpers
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 def _toggle_smtp_block(view):
     """Affiche/masque le bloc SMTP selon le mode sélectionné."""
     if view.app.mail_mode_var.get() == "none":
@@ -253,13 +252,19 @@ def _save_transmission_config(view):
 
     if mode != "none":
         if not view.app.mail_recipients_var.get().strip():
-            messagebox.showerror("Erreur", "Veuillez renseigner au moins un destinataire.")
+            messagebox.showerror(
+                "Erreur", "Veuillez renseigner au moins un destinataire."
+            )
             return
         if not view.app.mail_server_var.get().strip():
-            messagebox.showerror("Erreur", "Veuillez renseigner l'adresse du serveur mail.")
+            messagebox.showerror(
+                "Erreur", "Veuillez renseigner l'adresse du serveur mail."
+            )
             return
         if not view.app.mail_sender_var.get().strip():
-            messagebox.showerror("Erreur", "Veuillez renseigner l'adresse de l'expéditeur.")
+            messagebox.showerror(
+                "Erreur", "Veuillez renseigner l'adresse de l'expéditeur."
+            )
             return
 
     comment = view.comment_text.get("1.0", tk.END).strip()
@@ -267,22 +272,30 @@ def _save_transmission_config(view):
 
     config = {
         # Mail
-        "mail_poste":      view.app.mail_poste_var.get(),
-        "mail_mode":       view.app.mail_mode_var.get(),
+        "mail_poste": view.app.mail_poste_var.get(),
+        "mail_mode": view.app.mail_mode_var.get(),
         "mail_recipients": view.app.mail_recipients_var.get(),
-        "mail_server":     view.app.mail_server_var.get(),
-        "mail_port":       view.app.mail_port_var.get(),
-        "mail_sender":     view.app.mail_sender_var.get(),
-        "mail_password":   view.app.mail_password_var.get(),
-        "mail_security":   view.app.mail_security_var.get(),
+        "mail_server": view.app.mail_server_var.get(),
+        "mail_port": view.app.mail_port_var.get(),
+        "mail_sender": view.app.mail_sender_var.get(),
+        "mail_password": view.app.mail_password_var.get(),
+        "mail_security": view.app.mail_security_var.get(),
         # Rapport
-        "include_captured_image":      view.app.report_options["include_captured_image"].get(),
-        "include_segmented_image":     view.app.report_options["include_segmented_image"].get(),
-        "include_granulometric_curve": view.app.report_options["include_granulometric_curve"].get(),
-        "include_distribution_curve":  view.app.report_options["include_distribution_curve"].get(),
-        "include_statistics":          view.app.report_options["include_statistics"].get(),
-        "custom_comment":              comment,
-        "dna_correction_enabled":      view.app.show_corrected_curve_var.get(),
+        "include_captured_image": view.app.report_options[
+            "include_captured_image"
+        ].get(),
+        "include_segmented_image": view.app.report_options[
+            "include_segmented_image"
+        ].get(),
+        "include_granulometric_curve": view.app.report_options[
+            "include_granulometric_curve"
+        ].get(),
+        "include_distribution_curve": view.app.report_options[
+            "include_distribution_curve"
+        ].get(),
+        "include_statistics": view.app.report_options["include_statistics"].get(),
+        "custom_comment": comment,
+        "dna_correction_enabled": view.app.show_corrected_curve_var.get(),
     }
 
     try:
@@ -318,8 +331,10 @@ def _load_transmission_config(view):
         view.app.mail_security_var.set(cfg.get("mail_security", "none"))
 
         for key in (
-            "include_captured_image", "include_segmented_image",
-            "include_granulometric_curve", "include_distribution_curve",
+            "include_captured_image",
+            "include_segmented_image",
+            "include_granulometric_curve",
+            "include_distribution_curve",
             "include_statistics",
         ):
             if key in cfg:
@@ -373,7 +388,9 @@ def _send_email(view):
     _save_transmission_config(view)
 
     # Envoyer à chaque destinataire
-    recipients = [r.strip() for r in recipients_raw.replace(";", ",").split(",") if r.strip()]
+    recipients = [
+        r.strip() for r in recipients_raw.replace(";", ",").split(",") if r.strip()
+    ]
     success_count = 0
     for recipient in recipients:
         ok = envoyer_email_rapport(

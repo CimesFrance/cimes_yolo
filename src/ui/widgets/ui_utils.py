@@ -26,7 +26,9 @@ proj_root = get_project_root()
 LOGO_PATH = os.path.join(proj_root, "assets", "logo.png")
 if not os.path.exists(LOGO_PATH):
     print(f"[AVERTISSEMENT] Logo introuvable : {LOGO_PATH}")
-    print("Vérifiez que le fichier 'logo.png' est bien présent dans le dossier 'assets/' du projet.")
+    print(
+        "Vérifiez que le fichier 'logo.png' est bien présent dans le dossier 'assets/' du projet."
+    )
     LOGO_PATH = None
 
 
@@ -35,6 +37,7 @@ class Tooltip:
     Infobulle avec délai d'apparition et design moderne.
     Usage : Tooltip(widget, "Texte de l'infobulle")
     """
+
     _BG = "#1e293b"
     _FG = "#f1f5f9"
     _FG_HINT = "#94a3b8"  # couleur plus discrète pour le suffixe
@@ -136,7 +139,6 @@ def add_tooltip(parent, text: str, bg=None) -> tk.Label:
 
 
 def load_icon(name, size=(24, 24)):
-
     """Charge et redimensionne une icône depuis le dossier assets."""
     icon_path = os.path.join(proj_root, "assets", name)
     try:
@@ -297,7 +299,8 @@ def configure_styles(root):
 
 
 def create_display_card(  # pylint: disable=too-many-arguments,too-many-positional-arguments
-        parent, title, row, col, padx_tuple, default_text=None):
+    parent, title, row, col, padx_tuple, default_text=None
+):
     """Crée une carte d'affichage standard"""
     card = ttk.Frame(parent, style="Card.TFrame")
     default_text = default_text if default_text is not None else "En attente de flux..."

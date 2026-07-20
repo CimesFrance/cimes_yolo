@@ -16,6 +16,7 @@ class ComparisonDialog:
     """
     Mixin pour CurveView — gère la boîte de dialogue de comparaison et le rapport PDF.
     """
+
     # pylint: disable=no-member,too-few-public-methods
 
     def _open_comparison_dialog(self):
@@ -102,7 +103,9 @@ class ComparisonDialog:
         comp_fig = Figure(figsize=(12, 8))
         comp_ax = comp_fig.add_subplot(111)
         comp_fig.subplots_adjust(left=0.1, right=0.95, top=0.9, bottom=0.1)
-        colors = plt.cm.tab10(np.linspace(0, 1, len(self.app.comparison_captures)))  # pylint: disable=no-member
+        colors = plt.cm.tab10(
+            np.linspace(0, 1, len(self.app.comparison_captures))
+        )  # pylint: disable=no-member
         all_annotations = []
         for i, capture_id in enumerate(self.app.comparison_captures):
             capture = next(
