@@ -15,7 +15,7 @@ ACTIVATION_EMAIL = "activation@cimes.fr"
 class LicenseActivationDialog(tk.Tk):
     """Dialogue Tkinter demandant à l'utilisateur de sélectionner son fichier de licence."""
 
-    def __init__(self, mac_address=None, on_activate_callback=None):
+    def __init__(self, on_activate_callback=None):
         super().__init__()
         self.withdraw()  # Cacher la fenêtre pendant sa construction
         self.on_activate_callback = on_activate_callback

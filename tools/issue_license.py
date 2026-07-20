@@ -5,7 +5,9 @@ Génère un fichier de licence '.lic' chiffré/signé cryptographiquement en RSA
 Ce fichier contient la liste des empreintes machine autorisées pour le multi-poste.
 
 Usage :
-    python tools/issue_license.py --client "Carriere Martin" --fingerprints "A3F2-9C7B-E401-5D88,B7C1-4D2A-F908-3E55" --max-postes 3 --expires 2027-07-16 --output CIMES_Martin.lic
+    python tools/issue_license.py --client "Carriere Martin" --fingerprints
+    "A3F2-9C7B-E401-5D88,B7C1-4D2A-F908-3E55" --max-postes 3 --expires 2027-07-16
+    --output CIMES_Martin.lic
 """
 
 import argparse
@@ -25,6 +27,9 @@ except ImportError:
 
 
 def main():
+    """
+Génère une licence pour un client.
+"""
     parser = argparse.ArgumentParser(description="Générateur de licences CIMES")
     parser.add_argument("--client", required=True, help="Nom de l'entreprise cliente")
     parser.add_argument(
@@ -48,7 +53,6 @@ def main():
         default="keys/private_key.pem",
         help="Chemin vers la clé privée PEM",
     )
-
     args = parser.parse_args()
 
     # 1. Valider la clé privée
@@ -73,14 +77,15 @@ def main():
 
     if len(fps) > args.max_postes:
         print(
-            f"[AVERTISSEMENT] Le nombre d'empreintes fournies ({len(fps)}) dépasse le max-postes ({args.max_postes})."
+            f"[AVERTISSEMENT] Le nombre d'empreintes fournies ({len(fps)}) "
+            f"dépasse le max-postes ({args.max_postes})."
         )
 
     # 4. Charger la clé privée RSA
     try:
         with open(args.private_key, "rb") as key_file:
             private_key = load_pem_private_key(key_file.read(), password=None)
-    except Exception as e:
+    except (OSError, ValueError, TypeError) as e:
         print(f"[ERREUR] Échec du chargement de la clé privée : {e}")
         sys.exit(1)
 
@@ -105,7 +110,7 @@ def main():
             ),
             hashes.SHA256(),
         )
-    except Exception as e:
+    except ValueError as e:
         print(f"[ERREUR] Échec de la signature des données : {e}")
         sys.exit(1)
 
@@ -121,7 +126,7 @@ def main():
         print(f"   Postes Max  : {args.max_postes} (Enregistrés: {len(fps)})")
         print(f"   Expiration  : {expires_str}")
         print(f"   Signature   : {license_data['signature'][:20]}...")
-    except Exception as e:
+    except OSError as e:
         print(f"[ERREUR] Impossible d'écrire le fichier de licence : {e}")
         sys.exit(1)
 

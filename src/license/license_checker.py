@@ -11,7 +11,7 @@ import json
 import logging
 import os
 import shutil
-from typing import Optional
+
 
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
@@ -28,11 +28,10 @@ class LicenseStatus:
     """Résultat de la vérification de licence."""
 
     valid: bool
-    client: Optional[str] = None
-    expires: Optional[str] = None  # "YYYY-MM-DD"
-    days_remaining: Optional[int] = None
+    client: str | None = None
+    expires: str | None = None  # "YYYY-MM-DD"
+    days_remaining: int | None = None
     message: str = ""
-    license_key: Optional[str] = None  # Conservé pour compatibilité ascendante
 
 
 def _days_remaining(expires_at: str) -> int:
@@ -143,7 +142,6 @@ def check_license() -> LicenseStatus:
         expires=expires_at,
         days_remaining=days,
         message=f"Licence active pour '{client}' (expire dans {days} jour(s)).",
-        license_key="LICENCE-LOCALE",
     )
 
 

@@ -1,9 +1,5 @@
 """
-Script de génération d'une paire de clés RSA (2048 bits) pour le système de licence CIMES.
-
-Génère deux fichiers :
-  - private_key.pem : Clé privée à conserver précieusement et secrètement.
-  - public_key.pem  : Clé publique à distribuer dans le code du logiciel.
+Script de génération d'une paire de clés RSA pour le système de licence CIMES.
 """
 
 import os
@@ -14,11 +10,17 @@ try:
     from cryptography.hazmat.primitives import serialization
 except ImportError:
     print("[ERREUR] Le paquet 'cryptography' est requis.")
-    print("         Installez-le avec : pip install cryptography")
+    print("         Installez-le avec : uv add cryptography")
     sys.exit(1)
 
 
 def generate_keys():
+    """Génère la paire de clés RSA (2048 bits) pour le système de licence CIMES.
+
+    Génère 02 fichiers :
+      - private_key.pem : Clé privée.
+      - public_key.pem  : Clé publique.
+    """
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     keys_dir = os.path.join(project_root, "keys")
     os.makedirs(keys_dir, exist_ok=True)
@@ -30,10 +32,9 @@ def generate_keys():
     if os.path.exists(private_key_path) or os.path.exists(public_key_path):
         print("[INFO] Une paire de clés existe déjà dans le dossier 'keys/'.")
         print(
-            "       Supprimez-les manuellement si vous souhaitez en générer de nouvelles."
+            "Supprimez-les manuellement si vous souhaitez en générer de nouvelles."
         )
         return
-
     print("[INFO] Génération de la paire de clés RSA 2048 bits...")
 
     # 1. Générer la clé privée
@@ -43,7 +44,8 @@ def generate_keys():
     pem_private = private_key.private_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PrivateFormat.PKCS8,
-        encryption_algorithm=serialization.NoEncryption(),  # Non chiffrée pour simplifier le script CLI interne
+        # Non chiffrée pour simplifier le script CLI interne
+        encryption_algorithm=serialization.NoEncryption(),
     )
 
     with open(private_key_path, "wb") as f:
@@ -61,11 +63,9 @@ def generate_keys():
 
     print()
     print("=" * 60)
-    print("Paire de clés générée avec succès !")
-    print(f"  Clé privée (CONFIDENTIELLE) : {private_key_path}")
-    print(f"  Clé publique (À EMBARQUER)  : {public_key_path}")
-    print()
-    print(" ATTENTION : Ne committez JAMAIS la clé privée sur Git !")
+    print(" Paire de clés générée avec succès !")
+    print(f"  Clé privée : {private_key_path}")
+    print(f"  Clé publique : {public_key_path}")
     print("=" * 60)
 
 

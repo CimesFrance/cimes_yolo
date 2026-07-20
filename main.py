@@ -4,31 +4,36 @@ Main entry point for the Cimes application
 
 import sys
 import os
+import tkinter as tk
 import warnings
+from tkinter import messagebox
+from src.ui.main_app import CimesApp
+from src.license import check_license, register_license, LicenseStatus
+from src.license.ui import LicenseActivationDialog
 
 # Redirection des logs vers un fichier uniquement si CIMES_DEBUG=1 est défini
-# (jamais actif en production — évite de logger la MAC et les secrets en clair)
+# (jamais actif en production — évite de logger les données sensibles en clair)
 if getattr(sys, "frozen", False) and os.environ.get("CIMES_DEBUG") == "1":
     log_dir = os.path.join(os.path.expanduser("~"), "AppData", "Local", "Cimes")
     os.makedirs(log_dir, exist_ok=True)
     log_path = os.path.join(log_dir, "debug.log")
     try:
-        sys.stdout = open(
-            log_path, "w", encoding="utf-8"
-        )  # pylint: disable=consider-using-with
-        sys.stderr = sys.stdout
+        _log_file = open(log_path, "w", encoding="utf-8")  # pylint: disable=consider-using-with
+        sys.stdout = _log_file
+        sys.stderr = _log_file
     except Exception:  # pylint: disable=broad-except
         pass
-    print(f"=== Démarrage de l'application ===")
+    print("=== Démarrage de l'application ===")
     print(f"Executable: {sys.executable}")
     print(f"MEIPASS: {getattr(sys, '_MEIPASS', 'N/A')}")
 
 # Gestion du dossier des DLL de torch dans l'exécutable
 if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+    _MEIPASS = getattr(sys, "_MEIPASS", "")
     # Chemins possibles pour les DLLs de torch, dépend de onedir vs onefile
     torch_dll_paths = [
-        os.path.join(sys._MEIPASS, "_internal", "torch", "lib"),
-        os.path.join(sys._MEIPASS, "torch", "lib"),
+        os.path.join(_MEIPASS, "_internal", "torch", "lib"),
+        os.path.join(_MEIPASS, "torch", "lib"),
     ]
     for torch_dll_path in torch_dll_paths:
         if os.path.exists(torch_dll_path):
@@ -44,11 +49,8 @@ if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
 
         print(f"Torch chargé avec succès (version {torch.__version__})")
         print(f"CUDA disponible: {torch.cuda.is_available()}")
-    except Exception as e:
+    except Exception as e: # pylint: disable=broad-except
         print(f"Erreur lors du pré-chargement de torch: {e}")
-
-from src.ui.main_app import CimesApp
-from src.license import check_license, register_license, LicenseStatus
 
 warnings.filterwarnings("ignore")
 
@@ -60,33 +62,20 @@ else:
 
 
 if __name__ == "__main__":
-    # Gestion des modules secondaires via arguments pour l'exécutable PyInstaller
-    if len(sys.argv) > 1:
-        if sys.argv[1] == "--module-calibration":
-            from modules.app_calibrage_cam.ui.main_window import ApplicationCalibrage
-
-            app = ApplicationCalibrage()
-            app.mainloop()
-            sys.exit()
-        elif sys.argv[1] == "--module-correction":
-            from modules.app_change_corr_params.src.ui.main_window import CIMESApp
-
-            app = CIMESApp()
-            app.mainloop()
-            sys.exit()
-
     # Vérification de la licence avant le lancement de l'application
     print("Vérification de la licence...")
     license_status: LicenseStatus = check_license()
     print(f"Statut licence : {license_status.message}")
 
     if not license_status.valid:
-        from src.license.ui import LicenseActivationDialog
-        import tkinter as tk
-        from tkinter import messagebox
+        def handle_activation(lic_filepath):
+            """
+            Installe et valide un fichier de licence (.lic) sélectionné par l'utilisateur.
 
-        def handle_activation(key):
-            reg_status = register_license(key)
+            :param lic_filepath: Chemin absolu vers le fichier .lic sélectionné.
+            :return: Tuple (valid: bool, message: str)
+            """
+            reg_status = register_license(lic_filepath)
             return reg_status.valid, reg_status.message
 
         dialog = LicenseActivationDialog(on_activate_callback=handle_activation)

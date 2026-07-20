@@ -28,7 +28,7 @@ def build() -> None:
         import PyInstaller  # noqa: F401
     except ImportError:
         print("[ERREUR] PyInstaller n'est pas installé.")
-        print("         Installez-le avec : pip install pyinstaller")
+        print("         Installez-le avec : uv add pyinstaller")
         sys.exit(1)
 
     cmd = [
