@@ -194,9 +194,9 @@ class CapturePipeline:
         save_capture_data(capture_data, self.app.results_path_var.get(), self.app)
         if hasattr(self.app, "curve_view"):
             self.app.curve_view._update_capture_history_display()  # pylint: disable=protected-access
-            self.app.curve_view._update_curve_view_for_capture(
+            self.app.curve_view._update_curve_view_for_capture(  # pylint: disable=protected-access
                 capture_data["id"]
-            )  # pylint: disable=protected-access
+            )
             self.app.curve_view._update_particles_table()  # pylint: disable=protected-access
             self.app.curve_view.update_statistics_display(capture_data)
         self.app.daily_data.append(capture_data)

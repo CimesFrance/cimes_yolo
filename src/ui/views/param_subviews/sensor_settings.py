@@ -12,7 +12,7 @@ from src.ui.widgets.ui_utils import (
 )
 
 
-def create_sensor_settings(view):
+def create_sensor_settings(view):  # pylint: disable=too-many-statements
     """
     Construit le frame 'Capteur' et le retourne.
     view = l'instance ParamView.
@@ -237,7 +237,7 @@ def create_sensor_settings(view):
     ).pack(side="left")
     view._toggle_capture_controls()  # pylint: disable=protected-access
     view.app.capture_mode_var.trace_add(
-        "write", lambda *a: view._toggle_capture_controls()
+        "write", lambda *a: view._toggle_capture_controls()  # pylint: disable=protected-access
     )
     return frame
 

@@ -37,7 +37,7 @@ class VideoStream:
                     )
                 else:
                     connection_result["cap"] = cap
-            except Exception as e:
+            except Exception as e:  # pylint: disable=broad-exception-caught
                 connection_result["error"] = (
                     f"Erreur lors de la connexion au flux : {e}"
                 )
@@ -51,7 +51,7 @@ class VideoStream:
         conn_thread.join(timeout=3.0)
 
         if conn_thread.is_alive():
-            self.last_error = f"Délai d'attente dépassé (timeout 3s) lors de la connexion à : {self.rtsp_url}"
+            self.last_error = f"Délai d'attente dépassé lors de la connexion à : {self.rtsp_url}"
             print(f"[ERREUR] {self.last_error}")
             return False
 

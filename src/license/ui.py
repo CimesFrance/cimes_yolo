@@ -1,18 +1,19 @@
 """Boîte de dialogue d'activation de licence par fichier .lic."""
 
 import os
-import sys
 import tkinter as tk
-from tkinter import ttk, filedialog
+from tkinter import filedialog
 import webbrowser
 import urllib.parse
+import ctypes
 
+from src.utils.file_manager import get_project_root
 from .machine_fingerprint import compute_fingerprint
 
 ACTIVATION_EMAIL = "activation@cimes.fr"
 
 
-class LicenseActivationDialog(tk.Tk):
+class LicenseActivationDialog(tk.Tk):  # pylint: disable=too-many-instance-attributes
     """Dialogue Tkinter demandant à l'utilisateur de sélectionner son fichier de licence."""
 
     def __init__(self, on_activate_callback=None):
@@ -27,12 +28,10 @@ class LicenseActivationDialog(tk.Tk):
 
         # Hack d'icône Windows pour la barre des tâches
         try:
-            import ctypes
-
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
                 "cimes.license.activation.1.0"
             )
-        except Exception:
+        except AttributeError:
             pass
 
         # Icône de l'application
@@ -54,7 +53,7 @@ class LicenseActivationDialog(tk.Tk):
         # Empreinte machine
         try:
             self.machine_fp = compute_fingerprint()
-        except Exception as exc:
+        except (RuntimeError, OSError):
             self.machine_fp = "ERREUR"
 
         self._create_widgets()
@@ -63,8 +62,6 @@ class LicenseActivationDialog(tk.Tk):
     def _apply_icon(self):
         """Cherche et applique l'icône de l'application."""
         try:
-            from src.utils.file_manager import get_project_root
-
             icon_path = os.path.join(
                 get_project_root(),
                 "modules",
@@ -76,7 +73,7 @@ class LicenseActivationDialog(tk.Tk):
             if os.path.exists(icon_path):
                 self.iconbitmap(icon_path)
                 self.wm_iconbitmap(default=icon_path)
-        except Exception:
+        except (tk.TclError, OSError):
             pass
 
     def _create_widgets(self):

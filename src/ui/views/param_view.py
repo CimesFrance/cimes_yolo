@@ -6,6 +6,7 @@ Construit la nav latérale et délègue chaque section à son sous-module.
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import os
+import sys
 import shutil
 
 from src.utils.file_manager import get_project_root
@@ -42,6 +43,7 @@ class ParamView:
         self.capture_interval_frame = None
         self.time_frame = None
         self.days_frame = None
+        self.sensor_bottom_separator = None
 
         self._build_ui()
 
@@ -169,8 +171,8 @@ class ParamView:
                 widget.configure(state="disabled")
 
     def _download_guide(self):
-        """Permet de télécharger (sauvegarder) le guide d'utilisation PDF avec fallbacks de chemins."""
-        import sys
+        """Permet de télécharger (sauvegarder) 
+        le guide d'utilisation PDF avec fallbacks de chemins."""
 
         # 1. Recherche principale (dossier projet ou _MEIPASS)
         guide_path = os.path.join(get_project_root(), "assets", "Guide_Utilisation.pdf")
@@ -209,7 +211,7 @@ class ParamView:
                     "Le guide a été téléchargé avec succès.",
                     parent=self.frame,
                 )
-            except Exception as e:
+            except OSError as e:
                 messagebox.showerror(
                     "Erreur",
                     f"Erreur lors du téléchargement :\n{str(e)}",

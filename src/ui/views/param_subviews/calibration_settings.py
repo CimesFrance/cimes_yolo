@@ -22,7 +22,7 @@ from src.utils.file_manager import (
 )
 
 
-def create_calibration_settings(view):
+def create_calibration_settings(view):  # pylint: disable=too-many-statements
     """Construit le frame 'Calibration' et le retourne."""
     frame = ttk.Frame(view.param_content_frame, style="Card.TFrame")
     create_setting_header(frame, "Calibration Caméra")
@@ -222,7 +222,7 @@ def _call_measure_app(view):
         return
     if getattr(sys, "frozen", False):
         # En mode frozen, on relance l'exécutable avec un argument spécial
-        view.calibration_process = subprocess.Popen(
+        view.calibration_process = subprocess.Popen(  # pylint: disable=consider-using-with
             [sys.executable, "--module-calibration"]
         )
     else:
@@ -230,9 +230,9 @@ def _call_measure_app(view):
         script_path = os.path.normpath(
             os.path.join(root_dir, "modules", "app_calibrage_cam", "main.py")
         )
-        view.calibration_process = subprocess.Popen(
+        view.calibration_process = subprocess.Popen(  # pylint: disable=consider-using-with
             [sys.executable, script_path]
-        )  # pylint: disable=consider-using-with
+        )
 
     def wait_and_update():
         """Attend que l'application de calibration

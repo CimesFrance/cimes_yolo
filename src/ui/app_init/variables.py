@@ -2,19 +2,57 @@
 Initialisation de toutes les variables tkinter de l'application principale.
 """
 
-import tkinter as tk
 import os
+import tkinter as tk
 
 from src.ui.widgets.ui_utils import COLOR_STATUS_STOPPED, LOGO_PATH
-from src.utils.file_manager import load_correction_parameters, load_conversion_param
+from src.utils.file_manager import (
+    load_correction_parameters,
+    load_conversion_param,
+)
+
+
+def _init_transmission_vars(app):
+    """Initialise les variables de transmission SMTP."""
+    app.transmission_enabled_var = tk.BooleanVar(value=False)
+    app.transmission_mode_var = tk.StringVar(value="capture")
+    app.transmission_time_var = tk.StringVar(value="17:00")
+    app.mail_poste_var = tk.StringVar(value="")
+    app.mail_mode_var = tk.StringVar(value="none")
+    app.mail_recipients_var = tk.StringVar(value="")
+    app.mail_server_var = tk.StringVar(value="")
+    app.mail_port_var = tk.StringVar(value="587")
+    app.mail_sender_var = tk.StringVar(value="")
+    app.mail_password_var = tk.StringVar(value="")
+    app.mail_security_var = tk.StringVar(value="none")
+    app.transmission_email_var = app.mail_recipients_var
+
+
+def _init_report_vars(app):
+    """Initialise les variables et options de rapport."""
+    app.comparison_captures = []
+    app.comparison_mode = False
+    app.selected_captures_for_report = []
+    app.report_logo_path = LOGO_PATH
+    app.report_commentary = tk.StringVar(value="")
+    app.show_corrected_curve_var = tk.BooleanVar(value=True)
+    app.report_options = {
+        "include_captured_image": tk.BooleanVar(value=True),
+        "include_segmented_image": tk.BooleanVar(value=True),
+        "include_granulometric_curve": tk.BooleanVar(value=True),
+        "include_distribution_curve": tk.BooleanVar(value=True),
+        "include_statistics": tk.BooleanVar(value=True),
+        "custom_comment": tk.StringVar(value=""),
+    }
 
 
 def initialize_variables(app):
     """Initialise toutes les variables de l'application sur l'objet app."""
 
-    # État de la caméra (Initialisé par CameraController)
+    # État de la caméra
     app.frame_index = 0
     app.captured_count = 0
+
     # Variables d'état
     app.status_color_var = tk.StringVar(value=COLOR_STATUS_STOPPED)
     app.status_var = tk.StringVar(value="ARRÊTÉE")
@@ -22,6 +60,7 @@ def initialize_variables(app):
     app.datetime_var = tk.StringVar()
     app.images_count_var = tk.StringVar(value="0")
     app.status_detail_var = tk.StringVar(value="(Hors-ligne)")
+
     # Paramètres du capteur
     app.url_var = tk.StringVar(value="rtsp://192.168.1.30:554/stream1")
     app.save_path_var = tk.StringVar(
@@ -32,10 +71,10 @@ def initialize_variables(app):
     app.capture_time_val_var = tk.StringVar(value="5")
     app.capture_time_unit_var = tk.StringVar(value="s")
     app.save_delay_display_var = tk.StringVar(value="5 s")
-    # Statistiques
+
+    # Statistiques & Jours de fonctionnement
     app.time_left_capture_var = tk.StringVar(value="--")
     app.particles_count_var = tk.StringVar(value="0")
-    # Jours de fonctionnement
     app.days_vars = {
         "Lundi": tk.BooleanVar(value=True),
         "Mardi": tk.BooleanVar(value=True),
@@ -45,55 +84,30 @@ def initialize_variables(app):
         "Samedi": tk.BooleanVar(value=False),
         "Dimanche": tk.BooleanVar(value=False),
     }
-    # Mode de capture
     app.capture_mode_var = tk.StringVar(value="automatique")
-    # Transmission — configuration SMTP complète
-    app.transmission_enabled_var = tk.BooleanVar(value=False)
-    app.transmission_mode_var = tk.StringVar(value="capture")
-    app.transmission_time_var = tk.StringVar(value="17:00")
-    # Nouveau formulaire SMTP
-    app.mail_poste_var = tk.StringVar(value="")
-    app.mail_mode_var = tk.StringVar(value="none")  # none | error | error_result
-    app.mail_recipients_var = tk.StringVar(value="")
-    app.mail_server_var = tk.StringVar(value="")
-    app.mail_port_var = tk.StringVar(value="587")
-    app.mail_sender_var = tk.StringVar(value="")
-    app.mail_password_var = tk.StringVar(value="")
-    app.mail_security_var = tk.StringVar(value="none")  # ssl | tls | none
-    # Rétrocompatibilité
-    app.transmission_email_var = app.mail_recipients_var
+
+    # Transmission & Rapports
+    _init_transmission_vars(app)
+    _init_report_vars(app)
+
     # Chemins
     app.results_path_var = tk.StringVar(
         value=os.path.join(os.path.expanduser("~"), "CIMES_Results")
     )
-    # Comparaison et rapports
-    app.comparison_captures = []
-    app.comparison_mode = False
-    app.selected_captures_for_report = []
-    app.report_logo_path = LOGO_PATH
-    app.report_commentary = tk.StringVar(value="")
-    app.show_corrected_curve_var = tk.BooleanVar(value=True)
-    # Données
+
+    # Données & Navigation
     app.daily_data = []
     app.capture_history = []
     app.current_capture_index = -1
-    # Navigation
     app.nav_buttons = {}
-    # Options du rapport
-    app.report_options = {
-        "include_captured_image": tk.BooleanVar(value=True),
-        "include_segmented_image": tk.BooleanVar(value=True),
-        "include_granulometric_curve": tk.BooleanVar(value=True),
-        "include_distribution_curve": tk.BooleanVar(value=True),
-        "include_statistics": tk.BooleanVar(value=True),
-        "custom_comment": tk.StringVar(value=""),
-    }
+
     # Correction empirique
     vars_corr = load_correction_parameters()
     app.correction_granulo = {
         "scale": tk.DoubleVar(value=vars_corr["scale"]),
         "offset": tk.DoubleVar(value=vars_corr["offset"]),
     }
+
     # Calibration
     app.use_undistortion_var = tk.BooleanVar(value=False)
     app.use_homography_var = tk.BooleanVar(value=False)
@@ -101,7 +115,7 @@ def initialize_variables(app):
     app.dist = None
     app.calib_path = None
     app.homo_matrix = None
-    # Conversion mm-pixel : chargé depuis le JSON de calibration
-    # facteur_conversion = "coefficient de conversion pixel-mm" et "Échelle (mm/px)"
+
+    # Conversion mm-pixel
     param = load_conversion_param()
     app.facteur_conversion = tk.StringVar(value=str(param))

@@ -3,11 +3,14 @@ Contient les fonctions de calibration et de
 conversion des pixels en mm
 """
 
+import json
+import os
+
 import cv2
 import numpy as np
 
 
-def undistort_img(dist, mtx, cv2_bgr_img, crop_box=None):
+def undistort_img(dist, mtx, cv2_bgr_img, crop_box=None): # pylint: disable=too-many-instance-attributes
     """Fonction qui corrige les distorsions sur une image.
 
     Permet de rogner l'image selon crop_box=(x, y, w, h).
@@ -34,9 +37,6 @@ def undistort_img(dist, mtx, cv2_bgr_img, crop_box=None):
             x, y, w, h = crop_box
         else:
             try:
-                import json
-                import os
-
                 settings_file = os.path.join(
                     os.path.expanduser("~"),
                     "CIMES_Settings",
@@ -52,7 +52,7 @@ def undistort_img(dist, mtx, cv2_bgr_img, crop_box=None):
                             y = int(data["crop_y"])
                             w = int(data["crop_w"])
                             h = int(data["crop_h"])
-            except Exception:
+            except (OSError, ValueError, KeyError):
                 pass  # Fallback silencieux en cas d'erreur de lecture
 
         # Limitation dynamique aux dimensions de l'image (évite IndexError)

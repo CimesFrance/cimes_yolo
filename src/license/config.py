@@ -5,7 +5,6 @@ Définit la clé publique RSA pour la vérification des fichiers de licence (.li
 et résout les chemins d'accès aux fichiers.
 """
 
-import os
 from pathlib import Path
 import sys
 
@@ -47,6 +46,6 @@ def get_license_file_path() -> Path | None:
         lic_files = list(_base.glob("*.lic"))
         if lic_files:
             return lic_files[0]
-    except Exception:
+    except OSError:
         pass
     return None

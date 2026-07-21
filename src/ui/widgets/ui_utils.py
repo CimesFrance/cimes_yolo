@@ -32,7 +32,7 @@ if not os.path.exists(LOGO_PATH):
     LOGO_PATH = None
 
 
-class Tooltip:
+class Tooltip:  # pylint: disable=too-few-public-methods
     """
     Infobulle avec délai d'apparition et design moderne.
     Usage : Tooltip(widget, "Texte de l'infobulle")

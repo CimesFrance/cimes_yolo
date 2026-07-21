@@ -28,6 +28,7 @@ def _get_disk_uuid() -> str:
             capture_output=True,
             text=True,
             timeout=5,
+            check=False,
             creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0,
         )
         for line in result.stdout.splitlines():
@@ -62,6 +63,7 @@ def _get_disk_uuid() -> str:
             capture_output=True,
             text=True,
             timeout=5,
+            check=False,
             creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0,
         )
         for line in result.stdout.splitlines():
@@ -87,6 +89,7 @@ def _get_cpu_id() -> str:
                 capture_output=True,
                 text=True,
                 timeout=5,
+                check=False,
                 creationflags=subprocess.CREATE_NO_WINDOW,
             )
             for line in result.stdout.splitlines():

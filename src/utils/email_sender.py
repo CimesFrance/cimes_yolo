@@ -13,7 +13,7 @@ def envoyer_email_rapport(
     chemin_pdf,
     subject="Rapport de Granulométrie",
     body="Veuillez trouver ci-joint le rapport de granulométrie généré par l'application.",
-):
+):  # pylint: disable=too-many-return-statements,too-many-branches,too-many-statements,too-many-locals
     """
     Envoie un email avec le fichier PDF en pièce jointe.
     Utilise la configuration SMTP sauvegardée dans CIMES_Settings/report_configuration.json.
@@ -33,7 +33,7 @@ def envoyer_email_rapport(
     try:
         with open(config_path, encoding="utf-8") as f:
             cfg = json.load(f)
-    except Exception as e:
+    except (OSError, json.JSONDecodeError) as e:
         messagebox.showerror("Erreur", f"Impossible de lire la configuration mail :\n{e}")
         return False
 
@@ -74,7 +74,7 @@ def envoyer_email_rapport(
                 subtype="pdf",
                 filename=os.path.basename(chemin_pdf),
             )
-        except Exception as e:
+        except OSError as e:
             print(f"[EMAIL] Erreur attachement PDF : {e}")
             return False
     else:
@@ -109,6 +109,6 @@ def envoyer_email_rapport(
             "Vérifiez l'expéditeur et le mot de passe dans les paramètres.",
         )
         return False
-    except Exception as e:
+    except (smtplib.SMTPException, OSError) as e:
         messagebox.showerror("Erreur d'envoi", f"Erreur lors de l'envoi :\n{e}")
         return False

@@ -3,8 +3,9 @@ Ce module contient les fonctions de segmentation et d'analyse des particules.
 """
 
 import os
-import numpy as np
 import sys
+import numpy as np
+
 
 # Vérifier disponibilité de skimage
 try:
@@ -29,7 +30,7 @@ from src.core.calibration import undistort_img, homo_and_pixel_conversion
 def _get_base_dir():
     """chemin absolu vers le modele de yolo obb"""
     if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-        return sys._MEIPASS
+        return getattr(sys, "_MEIPASS", "")
     return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
@@ -40,7 +41,7 @@ YOLO_MODEL_PATH = os.path.join(_get_base_dir(), "best.pt")
 YOLO_CONF_DEFAULT = 0.25
 
 # Cache global pour éviter de recharger le modèle à chaque capture
-_yolo_model = None
+_YOLO_MODEL = None
 
 
 def mask_overlay(img, masks):
@@ -75,7 +76,7 @@ def mask_overlay(img, masks):
 
     # Convertir HSV → RGB via OpenCV (float32 [0,1] → uint8)
     hsv_uint8 = (hsv_img * 255).astype(np.uint8)
-    rgb_img = cv2.cvtColor(hsv_uint8, cv2.COLOR_HSV2RGB)
+    rgb_img = cv2.cvtColor(hsv_uint8, cv2.COLOR_HSV2BGR)  # pylint: disable=no-member
     return rgb_img
 
 
@@ -143,18 +144,18 @@ def segment_and_analyze(
         processed_image = homo_and_pixel_conversion(processed_image, homo_matrix)
 
     # YOLO attend une image BGR ou RGB
-    global _yolo_model
-    if _yolo_model is None:
+    global _YOLO_MODEL  # pylint: disable=global-statement
+    if _YOLO_MODEL is None:
         print(f"Chargement initial du modèle YOLO-OBB : {YOLO_MODEL_PATH}")
         try:
-            _yolo_model = YOLO(YOLO_MODEL_PATH)
+            _YOLO_MODEL = YOLO(YOLO_MODEL_PATH)
             print("[OK] Modèle YOLO-OBB chargé en mémoire")
         except Exception as e:
             print(f"[ERREUR] Échec du chargement du modèle YOLO : {e}")
             raise
     else:
         print("[OK] Utilisation du modèle YOLO-OBB pré-chargé")
-    model = _yolo_model
+    model = _YOLO_MODEL
 
     print(
         f"[DEBUG] Inférence YOLO sur image de taille {processed_image.shape}, conf={conf_threshold}"

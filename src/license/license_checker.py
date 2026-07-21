@@ -6,13 +6,14 @@ Fonctionne 100% hors-ligne.
 """
 
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date
 import json
 import logging
 import os
 import shutil
 
 
+from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
@@ -55,6 +56,7 @@ def check_license() -> LicenseStatus:
     Returns:
         LicenseStatus avec l'état de la licence.
     """
+    # pylint: disable=too-many-return-statements
     lic_path = get_license_file_path()
 
     # 1. Recherche du fichier .lic
@@ -69,7 +71,7 @@ def check_license() -> LicenseStatus:
         # 2. Charger le JSON de la licence
         with open(lic_path, "r", encoding="utf-8") as f:
             lic_data = json.load(f)
-    except Exception as exc:
+    except (OSError, json.JSONDecodeError) as exc:
         return LicenseStatus(
             valid=False,
             message=f"Le fichier de licence est corrompu ou illisible :\n{exc}",
@@ -100,7 +102,7 @@ def check_license() -> LicenseStatus:
             ),
             hashes.SHA256(),
         )
-    except Exception:
+    except (InvalidSignature, ValueError, TypeError):
         return LicenseStatus(
             valid=False,
             message="Signature de licence invalide. Le fichier a été falsifié.",
@@ -109,7 +111,6 @@ def check_license() -> LicenseStatus:
     # Récupération des informations de licence validées
     client = lic_data.get("client", "Client Inconnu")
     fingerprints = lic_data.get("fingerprints", [])
-    max_postes = lic_data.get("max_postes", 1)
     expires_at = lic_data.get("expires_at", "")
 
     # 4. Vérifier l'empreinte machine
@@ -178,7 +179,7 @@ def register_license(filepath_or_key: str) -> LicenseStatus:
         # Re-vérifier après installation
         return check_license()
 
-    except Exception as exc:
+    except (OSError, shutil.Error) as exc:
         return LicenseStatus(
             valid=False,
             message=f"Erreur lors de l'installation du fichier de licence :\n{exc}",

@@ -102,14 +102,13 @@ def create_analysis_settings(view):
     def _get_base_dir():
         """chemin absolu vers le modele de yolo obb"""
         if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-            return sys._MEIPASS
+            return sys._MEIPASS  # pylint: disable=protected-access
         return os.path.dirname(
             os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         )
 
     try:
         import ultralytics  # pylint: disable=unused-import,import-outside-toplevel
-        import os  # pylint: disable=import-outside-toplevel
 
         _model_path = os.path.join(_get_base_dir(), "best.pt")
         yolo_available = os.path.isfile(_model_path)
