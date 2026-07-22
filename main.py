@@ -62,6 +62,21 @@ else:
 
 
 if __name__ == "__main__":
+    # ── Gestion des modules secondaires
+    if "--module-calibration" in sys.argv:
+        from modules.app_calibrage_cam.ui.main_window import ApplicationCalibrage
+        _mod_app = ApplicationCalibrage()
+        _mod_app.mainloop()
+        sys.exit(0)
+
+    if "--module-correction" in sys.argv:
+        from modules.app_change_corr_params.src.ui.main_window import CIMESApp
+        _mod_app = CIMESApp()
+        _mod_app.mainloop()
+        sys.exit(0)
+
+    # ── Application principale
+
     # Vérification de la licence avant le lancement de l'application
     print("Vérification de la licence...")
     license_status: LicenseStatus = check_license()

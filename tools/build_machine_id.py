@@ -38,7 +38,7 @@ def build() -> None:
         "--onefile",  # Un seul .exe autonome
         "--windowed",  # Pas de console en arrière-plan
         "--name",
-        "machine_id",  # Nom du fichier de sortie
+        "Machine ID",  # Nom du fichier de sortie
         "--distpath",
         os.path.join(project_root, "dist"),
         "--workpath",
