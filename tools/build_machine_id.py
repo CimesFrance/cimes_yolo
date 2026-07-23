@@ -38,7 +38,7 @@ def build() -> None:
         "--onefile",  # Un seul .exe autonome
         "--windowed",  # Pas de console en arrière-plan
         "--name",
-        "Machine ID",  # Nom du fichier de sortie
+        "Fingerprint",  # Nom du fichier de sortie
         "--distpath",
         os.path.join(project_root, "dist"),
         "--workpath",
@@ -109,7 +109,7 @@ def build() -> None:
     result = subprocess.run(cmd, cwd=project_root)
 
     if result.returncode == 0:
-        exe_path = os.path.join(project_root, "dist", "machine_id.exe")
+        exe_path = os.path.join(project_root, "dist", "Fingerprint.exe")
         print()
         print("=" * 55)
         print(f"Compilation réussie !")
