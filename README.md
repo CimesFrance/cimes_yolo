@@ -81,8 +81,8 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 1. **Cloner le dépôt :**
    ```bash
-   git clone https://github.com/CimesFrance/cimes_yolo.git
-   cd cimes_yolo
+   git clone https://github.com/CimesFrance/Cimes.git
+   cd Cimes
    ```
 
 2. **Synchroniser l'environnement et installer les dépendances :**
@@ -103,7 +103,7 @@ Pour activer CIMES, le client doit générer et envoyer son empreinte matériell
   ```bash
   uv run python tools/machine_id.py
   ```
-  *(Ou utilisez l'exécutable compilé `dist/machine_id.exe` fourni avec le programme d'installation).*
+  *(Ou utilisez l'exécutable compilé `dist/Fingerprint.exe` fourni avec le programme d'installation).*
 * Copiez l'identifiant (format `XXXX-XXXX-XXXX-XXXX`) et envoyez-le à `activation@cimes.fr`.
 
 ### 2. Générer une licence (Côté CimesFrance)
