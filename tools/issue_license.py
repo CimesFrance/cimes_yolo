@@ -6,7 +6,7 @@ Ce fichier contient la liste des empreintes machine autorisées pour le multi-po
 
 Usage :
     python tools/issue_license.py --client "Carriere Martin" --fingerprints
-    "A3F2-9C7B-E401-5D88,B7C1-4D2A-F908-3E55" --max-postes 3 --expires 2027-07-16
+    "A3F2-9C7B-E401-5D88,B7C1-4D2A-F908-3E55" --expires 2027-07-16
     --output CIMES_Martin.lic
 """
 
@@ -37,9 +37,7 @@ Génère une licence pour un client.
         required=True,
         help="Liste d'empreintes machine séparées par des virgules",
     )
-    parser.add_argument(
-        "--max-postes", type=int, default=1, help="Nombre maximal de postes autorisés"
-    )
+
     parser.add_argument(
         "--expires", required=True, help="Date d'expiration au format YYYY-MM-DD"
     )
@@ -75,12 +73,6 @@ Génère une licence pour un client.
         print("[ERREUR] Vous devez spécifier au moins une empreinte machine valide.")
         sys.exit(1)
 
-    if len(fps) > args.max_postes:
-        print(
-            f"[AVERTISSEMENT] Le nombre d'empreintes fournies ({len(fps)}) "
-            f"dépasse le max-postes ({args.max_postes})."
-        )
-
     # 4. Charger la clé privée RSA
     try:
         with open(args.private_key, "rb") as key_file:
@@ -93,12 +85,11 @@ Génère une licence pour un client.
     license_data = {
         "client": args.client,
         "fingerprints": fps,
-        "max_postes": args.max_postes,
         "expires_at": expires_str,
         "issued_at": datetime.now().strftime("%Y-%m-%d"),
     }
 
-    # 6. Sérialiser les données de manière canonique (tri des clés) pour la signature
+    # 6. Sérialiser les données pour la signature
     canonical_data = json.dumps(license_data, sort_keys=True)
 
     # 7. Signer numériquement les données avec la clé privée RSA
@@ -123,7 +114,7 @@ Génère une licence pour un client.
             json.dump(license_data, lic_file, indent=4, ensure_ascii=False)
         print(f"Licence générée avec succès dans : {args.output}")
         print(f"   Entreprise  : {args.client}")
-        print(f"   Postes Max  : {args.max_postes} (Enregistrés: {len(fps)})")
+        print(f"   Postes enregistrés : {len(fps)}")
         print(f"   Expiration  : {expires_str}")
         print(f"   Signature   : {license_data['signature'][:20]}...")
     except OSError as e:

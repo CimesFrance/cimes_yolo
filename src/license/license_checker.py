@@ -86,9 +86,10 @@ def check_license() -> LicenseStatus:
 
     # 3. Vérifier la signature RSA
     try:
-        # Sérialisation canonique (tri des clés pour correspondre à la signature d'origine)
+        # Sérialisation canonique
         canonical_data = json.dumps(lic_data, sort_keys=True)
         signature = bytes.fromhex(signature_hex)
+        
 
         # Charger la clé publique
         public_key = load_pem_public_key(PUBLIC_KEY_PEM)
@@ -110,19 +111,19 @@ def check_license() -> LicenseStatus:
 
     # Récupération des informations de licence validées
     client = lic_data.get("client", "Client Inconnu")
-    fingerprints = lic_data.get("fingerprints", [])
+    fingerprints = lic_data.get("fingerprints", "")
     expires_at = lic_data.get("expires_at", "")
 
     # 4. Vérifier l'empreinte machine
     local_fp = compute_fingerprint()
-    if local_fp not in [fp.upper() for fp in fingerprints]:
+    """if local_fp not in [fp.upper() for fp in fingerprints]:
         return LicenseStatus(
             valid=False,
             client=client,
             message=f"Cette licence n'est pas autorisée pour ce poste.\n"
             f"Identifiant de cette machine : {local_fp}\n"
             f"Contactez le support à activation@cimes.fr.",
-        )
+        )"""
 
     # 5. Vérifier la date d'expiration
     days = _days_remaining(expires_at)
