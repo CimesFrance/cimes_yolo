@@ -116,14 +116,14 @@ def check_license() -> LicenseStatus:
 
     # 4. Vérifier l'empreinte machine
     local_fp = compute_fingerprint()
-    """if local_fp not in [fp.upper() for fp in fingerprints]:
+    if local_fp != fingerprints:
         return LicenseStatus(
             valid=False,
             client=client,
             message=f"Cette licence n'est pas autorisée pour ce poste.\n"
             f"Identifiant de cette machine : {local_fp}\n"
             f"Contactez le support à activation@cimes.fr.",
-        )"""
+        )
 
     # 5. Vérifier la date d'expiration
     days = _days_remaining(expires_at)

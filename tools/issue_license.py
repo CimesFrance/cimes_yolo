@@ -6,7 +6,7 @@ Ce fichier contient la liste des empreintes machine autorisées pour le multi-po
 
 Usage :
     python tools/issue_license.py --client "Carriere Martin" --fingerprints
-    "A3F2-9C7B-E401-5D88,B7C1-4D2A-F908-3E55" --expires 2027-07-16
+    "A3F2-9C7B-E401-5D88" --expires 2027-07-16
     --output CIMES_Martin.lic
 """
 
